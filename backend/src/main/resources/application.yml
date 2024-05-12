@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: WhereIsMyHome
+  datasource:
+    url: jdbc:mysql://localhost:3306/ssafyhome?serverTimeZone=Asia/Seoul&characterEncoding=UTF-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ssafy
+    password: ssafy
+  jpa:
+    hibernate:
+      ddl-auto: update
+    generate-ddl: false
+    show-sql: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+
+jwt:
+  secret: cc4a2a281ad18099f981545e4a478152
