@@ -1,10 +1,10 @@
 package com.ssafy.home.domain.user.service;
 
-import com.ssafy.home.domain.user.domain.Member;
-import com.ssafy.home.domain.user.domain.MemberSecret;
 import com.ssafy.home.domain.user.dto.request.LoginRequest;
 import com.ssafy.home.domain.user.dto.request.RegisterRequest;
 import com.ssafy.home.domain.user.dto.response.TokenResponse;
+import com.ssafy.home.domain.user.entity.Member;
+import com.ssafy.home.domain.user.entity.MemberSecret;
 import com.ssafy.home.domain.user.repository.MemberRepository;
 import com.ssafy.home.domain.user.repository.MemberSecurityRepository;
 import com.ssafy.home.global.auth.Encryption;

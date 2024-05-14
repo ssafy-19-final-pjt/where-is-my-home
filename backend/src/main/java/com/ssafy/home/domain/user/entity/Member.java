@@ -1,4 +1,4 @@
-package com.ssafy.home.domain.user.domain;
+package com.ssafy.home.domain.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

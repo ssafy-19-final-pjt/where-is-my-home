@@ -1,6 +1,6 @@
 package com.ssafy.home.global.auth;
 
-import com.ssafy.home.domain.user.domain.Member;
+import com.ssafy.home.domain.user.entity.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
@@ -37,12 +37,12 @@ public class JwtTokenProvider {
         secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createAccessToken(Member u) {
+    public String createAccessToken(Member m) {
         String token = "";
 
         Claims claims = Jwts.claims()
-                .add("id", u.getId())
-                .add("name",u.getName())
+                .add("id", m.getId())
+                .add("name",m.getName())
                 .build();
 
         Date now = new Date();
