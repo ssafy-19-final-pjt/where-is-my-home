@@ -9,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -90,8 +91,17 @@ public class JwtTokenProvider {
     }
 
 
-    public Claims getInformation(String token) {
-        return Jwts.parser().verifyWith(this.secretKey).build().parseSignedClaims(token).getPayload();
+    public Long getInfoId(String token) {
+        return parseJson(token).getLong("id");
     }
 
+    public String getInfoName(String accessToken) {
+        return parseJson(accessToken).getString("name");
+    }
+
+
+    private JSONObject parseJson(String token){
+        Claims claims = Jwts.parser().verifyWith(this.secretKey).build().parseSignedClaims(token).getPayload();
+        return new JSONObject(claims);
+    }
 }

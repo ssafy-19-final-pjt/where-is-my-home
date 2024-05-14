@@ -10,7 +10,6 @@ import com.ssafy.home.domain.user.repository.MemberSecurityRepository;
 import com.ssafy.home.global.auth.Encryption;
 import com.ssafy.home.global.auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -80,9 +79,7 @@ public class MemberServiceImpl implements MemberService {
     public String reissue(String refreshToken) {
 
         if(jwtTokenProvider.validateToken(refreshToken)){
-
-            JSONObject info = new JSONObject(jwtTokenProvider.getInformation(refreshToken));
-            Long id = info.getLong("id");
+            Long id = jwtTokenProvider.getInfoId(refreshToken);
 
             Member member = memberRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("No member found with id: " + id));
