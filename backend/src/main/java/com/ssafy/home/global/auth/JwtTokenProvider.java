@@ -1,5 +1,6 @@
 package com.ssafy.home.global.auth;
 
+import com.ssafy.home.domain.user.dto.response.TokenResponse;
 import com.ssafy.home.domain.user.entity.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -38,6 +39,21 @@ public class JwtTokenProvider {
         secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
+    private Date createAccessTokenExpireTime(Date now){
+        return new Date(now.getTime() + (1000L * 60));
+    }
+
+    private Date createRefreshTokenExpireTime(Date now){
+        return new Date(now.getTime() + (1000L * 60 *60));
+    }
+
+    public TokenResponse createJwtTokenResponse(Member m) {
+        return TokenResponse.builder()
+                .accessToken(createAccessToken(m))
+                .refreshToken(createRefreshToken(m.getId()))
+                .build();
+    }
+
     public String createAccessToken(Member m) {
         String token = "";
 
@@ -51,7 +67,7 @@ public class JwtTokenProvider {
         token = Jwts.builder()
                 .claims(claims)
                 .issuedAt(now)//발행시간
-                .expiration(new Date(now.getTime() + (1000L * 60)))//만료시간 1분
+                .expiration(createAccessTokenExpireTime(now))//만료시간 1분
                 .signWith(secretKey, Jwts.SIG.HS256)
                 .compact();
 
@@ -70,7 +86,7 @@ public class JwtTokenProvider {
         token = Jwts.builder()
                 .claims(claims)
                 .issuedAt(now)//발행시간
-                .expiration(new Date(now.getTime() + (1000L * 60 * 60)))//만료시간 60분
+                .expiration(createRefreshTokenExpireTime(now))//만료시간 60분
                 .signWith(secretKey, Jwts.SIG.HS256)
                 .compact();
 
