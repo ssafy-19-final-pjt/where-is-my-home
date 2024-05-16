@@ -54,6 +54,9 @@ dependencies {
 	// openfeign
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
+	// 카카오 테스트를 위해 임시 추가
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+}
 
 dependencyManagement {
 	imports {
@@ -61,8 +64,6 @@ dependencyManagement {
 	}
 }
 
-
-}
 
 tasks.named('test') {
 	useJUnitPlatform()
