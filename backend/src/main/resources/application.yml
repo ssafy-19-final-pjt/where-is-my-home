@@ -21,3 +21,14 @@ spring:
 
 jwt:
   secret: cc4a2a281ad18099f981545e4a478152
+
+logging:
+  level:
+    com.app: debug
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
