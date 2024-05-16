@@ -15,11 +15,6 @@ public class RegisterRequest {
         return Member.builder()
                 .name(name)
                 .email(email)
-                .userEncPassword(password)
                 .build();
-    }
-
-    public void createPassword(String password){
-        this.password = password;
     }
 }

@@ -14,19 +14,19 @@ public class MemberSecret {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "no")
+    @Column(name = "id")
     private long id;
 
     @OneToOne
-    @JoinColumn(name = "member_no")
-    private Member member;
+    @JoinColumn(name = "member_id")
+    private GeneralMember generalMember;
 
     @Column(name = "salt", nullable = false, length = 1000)
     private String salt;
 
     @Builder
-    public MemberSecret(Member member, String salt) {
-        this.member = member;
+    public MemberSecret(GeneralMember generalMember, String salt) {
+        this.generalMember = generalMember;
         this.salt = salt;
     }
 }

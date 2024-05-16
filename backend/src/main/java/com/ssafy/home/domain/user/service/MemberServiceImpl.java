@@ -3,64 +3,79 @@ package com.ssafy.home.domain.user.service;
 import com.ssafy.home.domain.user.dto.request.LoginRequest;
 import com.ssafy.home.domain.user.dto.request.RegisterRequest;
 import com.ssafy.home.domain.user.dto.response.TokenResponse;
+import com.ssafy.home.domain.user.entity.GeneralMember;
+import com.ssafy.home.domain.user.entity.LoginAttempt;
 import com.ssafy.home.domain.user.entity.Member;
 import com.ssafy.home.domain.user.entity.MemberSecret;
+import com.ssafy.home.domain.user.repository.GeneralMemberRepository;
+import com.ssafy.home.domain.user.repository.LoginAttemptRepository;
 import com.ssafy.home.domain.user.repository.MemberRepository;
 import com.ssafy.home.domain.user.repository.MemberSecurityRepository;
 import com.ssafy.home.global.auth.Encryption;
 import com.ssafy.home.global.auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.NoSuchElementException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MemberServiceImpl implements MemberService {
 
-    final private MemberRepository memberRepository;
-    final private MemberSecurityRepository memberSecurityRepository;
+    private final MemberRepository memberRepository;
+    private final MemberSecurityRepository memberSecurityRepository;
+    private final GeneralMemberRepository generalMemberRepository;
+    private final LoginAttemptRepository loginAttemptRepository;
 
-    final private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
     private final Encryption encryption;
 
     @Override
+    @Transactional
     public void register(RegisterRequest registerRequest) {
-        if(memberRepository.existsByEmail(registerRequest.getEmail())){
-            System.out.println("이메일 중복 error 처리 요");
-        };
 
         try{
+            if(memberRepository.existsByEmail(registerRequest.getEmail())){
+                throw new Exception("이메일 중복 error 처리 요");
+            };
+
             String salt  = encryption.getSalt();
             String password = encryption.Hashing(registerRequest.getPassword().getBytes(), salt);
-            registerRequest.createPassword(password);
 
             Member member = memberRepository.save(registerRequest.toEntity());
-            memberSecurityRepository.save(MemberSecret.builder().member(member).salt(salt).build());
+            GeneralMember generalMember = generalMemberRepository.save(GeneralMember.builder().member(member).userEncPassword(password).build());
+            memberSecurityRepository.save(MemberSecret.builder().generalMember(generalMember).salt(salt).build());
+            loginAttemptRepository.save(LoginAttempt.builder().member(member).build());
+
         } catch (Exception e){
             e.printStackTrace();
         }
     }
 
     @Override
+    @Transactional
     public TokenResponse login(LoginRequest loginRequest) {
+
         Member member = memberRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow();
-
-        String salt = memberSecurityRepository.findById(member.getId())
-                .orElseThrow(() -> new NoSuchElementException("error 처리 요"))
-                .getSalt();
-
-
         try {
+            if(member.getLoginAttempt().getCount() >= 5){
+                throw new Exception("시도 횟수 5 내일 다시 로그인 추가 요");
+            }
+
+            String salt = member.getGeneralMember().getMemberSecret().getSalt();
+
             String enc_password = encryption.Hashing(loginRequest.getPassword().getBytes(), salt);
 
-            if (!member.getUserEncPassword().equals(enc_password)) {
-                new Exception("error 처리 요");
+            if (!member.getGeneralMember().getUserEncPassword().equals(enc_password)) {
+                throw new Exception("error 처리 요");
             }
 
             String accessToken = jwtTokenProvider.createAccessToken(member);
             String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
+
+            member.getLoginAttempt().initCount();
 
             return TokenResponse.builder()
                     .accessToken(accessToken)
@@ -68,6 +83,7 @@ public class MemberServiceImpl implements MemberService {
                     .build();
 
         } catch (Exception e) {
+            member.getLoginAttempt().updateCount();
             e.printStackTrace();
         }
 
@@ -89,6 +105,4 @@ public class MemberServiceImpl implements MemberService {
 
         return null;
     }
-
-
 }
