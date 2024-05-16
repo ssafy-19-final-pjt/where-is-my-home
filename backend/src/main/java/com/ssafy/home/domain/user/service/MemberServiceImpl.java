@@ -17,12 +17,11 @@ import java.util.NoSuchElementException;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
-
-    final private MemberRepository memberRepository;
-    final private MemberSecurityRepository memberSecurityRepository;
-
-    final private JwtTokenProvider jwtTokenProvider;
+    private final MemberRepository memberRepository;
+    private final MemberSecurityRepository memberSecurityRepository;
+    private final JwtTokenProvider jwtTokenProvider;
     private final Encryption encryption;
+
 
     @Override
     public void register(RegisterRequest registerRequest) {
