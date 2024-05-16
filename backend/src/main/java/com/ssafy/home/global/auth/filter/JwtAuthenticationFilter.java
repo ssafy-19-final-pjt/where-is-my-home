@@ -2,7 +2,7 @@ package com.ssafy.home.global.auth.filter;
 
 import com.ssafy.home.domain.user.entity.Member;
 import com.ssafy.home.domain.user.repository.MemberRepository;
-import com.ssafy.home.global.auth.JwtTokenProvider;
+import com.ssafy.home.global.auth.jwt.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

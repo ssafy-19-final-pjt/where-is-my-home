@@ -1,14 +1,14 @@
-package com.ssafy.home.domain.web.kakaotoken.controller;
+package com.ssafy.home.external.oauth.kakaoToken.controller;
 
-import com.ssafy.home.domain.web.kakaotoken.client.KakaoTokenClient;
-import com.ssafy.home.domain.web.kakaotoken.dto.KakaoTokenDto;
+
+import com.ssafy.home.external.oauth.kakaoToken.client.KakaoTokenClient;
+import com.ssafy.home.external.oauth.kakaoToken.dto.KakaoTokenDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 
 @Controller
 @RequiredArgsConstructor
@@ -27,11 +27,6 @@ public class KakaoTokenController {
         return "loginForm";
     }
 
-//    @GetMapping("/oauth/kakao/callback")
-//    public @ResponseBody String loginCallback(@RequestParam("code") String code) {
-//        return code;
-//    }
-
     @GetMapping("/oauth/kakao/callback")
     public @ResponseBody String loginCallback(@RequestParam("code") String code) {
         String contentType = "application/x-www-form-urlencoded;charset=utf-8";
@@ -43,8 +38,7 @@ public class KakaoTokenController {
                 .redirect_uri("http://localhost:8080/oauth/kakao/callback")
                 .build();
         KakaoTokenDto.Response kakaoToken = kakaoTokenClient.requestKakaoToken(contentType, kakaoTokenRequestDto);
-        return "kakao token : " + kakaoToken;
+        return "kakao toekn : " + kakaoToken;
     }
 
 }
-

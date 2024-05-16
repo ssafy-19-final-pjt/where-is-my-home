@@ -1,6 +1,6 @@
-package com.ssafy.home.domain.web.kakaotoken.client;
+package com.ssafy.home.external.oauth.kakaoToken.client;
 
-import com.ssafy.home.domain.web.kakaotoken.dto.KakaoTokenDto;
+import com.ssafy.home.external.oauth.kakaoToken.dto.KakaoTokenDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,4 +15,3 @@ public interface KakaoTokenClient {
     );
 
 }
-

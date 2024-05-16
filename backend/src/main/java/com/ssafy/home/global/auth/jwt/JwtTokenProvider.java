@@ -1,7 +1,7 @@
-package com.ssafy.home.global.auth;
+package com.ssafy.home.global.auth.jwt;
 
-import com.ssafy.home.domain.user.dto.response.TokenResponse;
 import com.ssafy.home.domain.user.entity.Member;
+import com.ssafy.home.global.auth.jwt.dto.JwtTokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
@@ -47,8 +47,8 @@ public class JwtTokenProvider {
         return new Date(now.getTime() + (1000L * 60 *60));
     }
 
-    public TokenResponse createJwtTokenResponse(Member m) {
-        return TokenResponse.builder()
+    public JwtTokenDto createJwtTokenResponse(Member m) {
+        return JwtTokenDto.builder()
                 .accessToken(createAccessToken(m))
                 .refreshToken(createRefreshToken(m.getId()))
                 .build();

@@ -4,7 +4,8 @@ import com.ssafy.home.domain.user.dto.request.LoginRequest;
 import com.ssafy.home.domain.user.dto.request.RegisterRequest;
 import com.ssafy.home.domain.user.dto.response.TokenResponse;
 import com.ssafy.home.domain.user.service.MemberService;
-import com.ssafy.home.global.auth.JwtTokenProvider;
+import com.ssafy.home.global.auth.jwt.JwtTokenProvider;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 
+@Tag(name = "member", description = "회원 API")
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -65,6 +67,4 @@ public class MemberController {
 
         return ResponseEntity.status(HttpStatus.OK).body("access token");
     }
-
-
 }

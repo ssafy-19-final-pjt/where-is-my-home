@@ -1,4 +1,4 @@
-package com.ssafy.home.domain.web.kakaotoken.dto;
+package com.ssafy.home.external.oauth.kakaoToken.dto;
 
 import lombok.Builder;
 import lombok.Getter;
