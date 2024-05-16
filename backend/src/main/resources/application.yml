@@ -1,14 +1,17 @@
 spring:
+  config:
+    import:
+      - privacy.yml
   application:
     name: WhereIsMyHome
   datasource:
-    url: jdbc:mysql://localhost:3306/ssafyhome?serverTimeZone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://${db.host}:${db.port}/${db.database}?serverTimeZone=Asia/Seoul&characterEncoding=UTF-8
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ssafy
-    password: ssafy
+    username: ${db.username}
+    password: ${db.password}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     generate-ddl: false
     show-sql: true
     database: mysql
@@ -16,11 +19,7 @@ spring:
     properties:
       hibernate:
         show_sql: true
-        format_sql: true
         use_sql_comments: true
-
-jwt:
-  secret: cc4a2a281ad18099f981545e4a478152
 
 logging:
   level:
@@ -32,8 +31,3 @@ feign:
       default:
         connectTimeout: 5000
         readTimeout: 5000
-
-kakao:
-  client:
-    id: c714bac4c4d5e5347be52458dde9b3de
-    secret: FBWx6ktT6uPtVmYZ9r8VzcU8KB2bFd6b
