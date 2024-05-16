@@ -28,11 +28,15 @@ public class Member {
     @Column(name = "email", nullable = false, length = 30)
     private String email;
 
-    @Column(name = "image_url", length = 256)
-    private String imageUrl;
+    @Column(name = "profile", length = 256)
+    private String profile;
 
     @Column(name = "refresh_token", length = 256)
     private String refreshToken;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private MemberType memberType;
 
     @CreatedDate
     @Column(name = "create_date", columnDefinition = "datetime default CURRENT_TIMESTAMP")
@@ -57,10 +61,15 @@ public class Member {
 
 
     @Builder
-    private Member(String name, String email, String imageUrl, String refreshToken) {
+    private Member(String name, String email, String profile, String refreshToken, MemberType memberType) {
         this.name = name;
         this.email = email;
-        this.imageUrl = imageUrl;
+        this.profile = profile;
+        this.refreshToken = refreshToken;
+        this.memberType = memberType;
+    }
+
+    public void updateRefreshToken(String refreshToken){
         this.refreshToken = refreshToken;
     }
 }
