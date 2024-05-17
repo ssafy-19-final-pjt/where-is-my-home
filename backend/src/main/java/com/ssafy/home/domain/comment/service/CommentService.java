@@ -39,7 +39,7 @@ public class CommentService{
     public void updateComment(Long memberId, Long boardId, Long commentId, CommentRequestUpdateDto commentRequestUpdateDto) {
         Member member = memberService.getMemberById(memberId);
         Board board = boardReadService.getBoard(boardId);
-        Comment comment = commentReadService.getCommentFromCommentId(commentId);
+        Comment comment = commentReadService.getComment(commentId);
 
         if(member.getId()!= comment.getMember().getId()){
             //TODO : 오류처리
@@ -53,7 +53,7 @@ public class CommentService{
     public void deleteComment(Long memberId, Long boardId, Long commentId) {
         Member member = memberService.getMemberById(memberId);
         Board board = boardReadService.getBoard(boardId);
-        Comment comment = commentReadService.getCommentFromCommentId(commentId);
+        Comment comment = commentReadService.getComment(commentId);
         
         if(member.getId()!= comment.getMember().getId()){
             //TODO : 오류처리

@@ -16,7 +16,7 @@ public class CommentReadService {
         return commentRepository.findAllByBoardId(boardId);
     }
 
-    public Comment getCommentFromCommentId(Long commentId){
+    public Comment getComment(Long commentId){
         //TODO : 오류처리
         return commentRepository.findById(commentId).orElseThrow();
     }

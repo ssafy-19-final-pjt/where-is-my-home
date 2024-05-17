@@ -4,6 +4,7 @@ import com.ssafy.home.domain.comment.dto.request.CommentRequestDto;
 import com.ssafy.home.domain.comment.dto.request.CommentRequestUpdateDto;
 import com.ssafy.home.domain.comment.dto.response.CommentResponseDto;
 import com.ssafy.home.domain.comment.service.CommentService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +21,13 @@ import java.util.List;
 public class CommentController {
     private final CommentService commentService;
 
+    @Operation(summary="게시글 댓글 전체 조회", description = "특정 게시글의 댓글을 전체 조회합니다")
     @GetMapping("/{boardId}")
     public ResponseEntity<List<CommentResponseDto>> getCommentAll(@PathVariable Long boardId) {
         return ResponseEntity.ok(commentService.getCommentAll(boardId));
     }
 
+    @Operation(summary="댓글 생성", description = "특정 게시글의 댓글을 생성합니다")
     @PostMapping("/{boardId}")
     public ResponseEntity<Void> createComment(@AuthenticationPrincipal Long memberId,
                                               @PathVariable Long boardId,
@@ -33,6 +36,7 @@ public class CommentController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary="댓글 수정", description = "자신이 작성한 댓글을 수정합니다")
     @PatchMapping("/{boardId}/{commentId}")
     public ResponseEntity<Void> updateComment(@AuthenticationPrincipal Long memberId,
                                               @PathVariable Long boardId,
@@ -42,6 +46,7 @@ public class CommentController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary="댓글 삭제", description = "자신이 작성한 댓글을 삭제합니다")
     @DeleteMapping("/{boardId}/{commentId}")
     public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal Long memberId, @PathVariable Long boardId, @PathVariable Long commentId){
         commentService.deleteComment(memberId, boardId, commentId);
