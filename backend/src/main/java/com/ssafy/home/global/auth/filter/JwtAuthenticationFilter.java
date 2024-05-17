@@ -55,7 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         //userName 넣기, 문 열어주기
-        Long userId = jwtTokenProvider.getInfoId("token");
+        Long userId = jwtTokenProvider.getInfoId(token);
         log.info("userId : {}", userId);
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("Error: No member found with id " + userId));
