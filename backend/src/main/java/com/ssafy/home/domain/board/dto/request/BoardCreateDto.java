@@ -1,7 +1,7 @@
 package com.ssafy.home.domain.board.dto.request;
 
 import com.ssafy.home.domain.board.entity.Board;
-import com.ssafy.home.domain.user.entity.Member;
+import com.ssafy.home.entity.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -16,6 +16,7 @@ public class BoardCreateDto {
                 .title(title)
                 .content(content)
                 .hit(0)
+                .member(member)
                 .build();
     }
 }

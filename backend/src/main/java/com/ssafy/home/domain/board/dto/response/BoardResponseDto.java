@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class BoardResponseDto {
+    private String memberName;
     private Long id;
     private String title;
     private String content;
@@ -16,6 +17,7 @@ public class BoardResponseDto {
 
     public static BoardResponseDto from(Board board) {
         return new BoardResponseDto(
+                board.getMember().getName(),
                 board.getId(),
                 board.getTitle(),
                 board.getContent(),

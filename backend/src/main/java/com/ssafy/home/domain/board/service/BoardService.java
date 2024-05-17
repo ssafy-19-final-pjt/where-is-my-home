@@ -3,11 +3,8 @@ package com.ssafy.home.domain.board.service;
 import com.ssafy.home.domain.board.dto.request.BoardCreateDto;
 import com.ssafy.home.domain.board.dto.response.BoardResponseDto;
 import com.ssafy.home.domain.board.entity.Board;
-import com.ssafy.home.domain.board.repository.BoardRepository;
 import java.util.List;
 
-import com.ssafy.home.domain.user.entity.Member;
-import com.ssafy.home.domain.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
@@ -21,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BoardService {
     private final BoardReadService boardReadService;
     private final BoardResponseMapper boardResponseMapper;
-    private final MemberService memberService;
+//    private final MemberService memberService;
     private final BoardWriteService boardWriteService;
 
     public List<BoardResponseDto> getBoardAll() {

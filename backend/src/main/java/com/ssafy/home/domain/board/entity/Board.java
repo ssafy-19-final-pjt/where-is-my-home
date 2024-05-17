@@ -1,26 +1,20 @@
 package com.ssafy.home.domain.board.entity;
 
 import com.ssafy.home.domain.comment.entity.Comment;
-import com.ssafy.home.domain.user.entity.Member;
+import com.ssafy.home.entity.member.Member;
 import com.ssafy.home.global.entity.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
-@Entity(name = "board")
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Board extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,9 +38,10 @@ public class Board extends BaseTimeEntity {
     List<Comment> commentList = new ArrayList<>();
 
     @Builder
-    private Board(String title, String content, int hit) {
+    private Board(String title, String content, int hit, Member member) {
         this.title = title;
         this.content = content;
         this.hit = hit;
+        this.member = member;
     }
 }
