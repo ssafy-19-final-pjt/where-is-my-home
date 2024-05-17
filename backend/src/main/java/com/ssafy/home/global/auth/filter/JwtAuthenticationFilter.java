@@ -1,8 +1,8 @@
 package com.ssafy.home.global.auth.filter;
 
-import com.ssafy.home.domain.user.entity.Member;
-import com.ssafy.home.domain.user.repository.MemberRepository;
-import com.ssafy.home.global.auth.JwtTokenProvider;
+import com.ssafy.home.entity.member.Member;
+import com.ssafy.home.domain.member.repository.MemberRepository;
+import com.ssafy.home.global.auth.jwt.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,7 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         //userName 넣기, 문 열어주기
-        Long userId = jwtTokenProvider.getInfoId("token");
+        Long userId = jwtTokenProvider.getInfoId(token);
         log.info("userId : {}", userId);
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("Error: No member found with id " + userId));
