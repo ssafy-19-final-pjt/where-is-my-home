@@ -1,9 +1,9 @@
-package com.ssafy.home.domain.user.controller;
+package com.ssafy.home.domain.member.controller;
 
-import com.ssafy.home.domain.user.dto.request.LoginRequest;
-import com.ssafy.home.domain.user.dto.request.RegisterRequest;
-import com.ssafy.home.domain.user.dto.response.TokenResponse;
-import com.ssafy.home.domain.user.service.MemberService;
+import com.ssafy.home.domain.member.dto.request.LoginRequest;
+import com.ssafy.home.domain.member.dto.request.RegisterRequest;
+import com.ssafy.home.domain.member.dto.response.TokenResponse;
+import com.ssafy.home.domain.member.service.MemberService;
 import com.ssafy.home.global.auth.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;

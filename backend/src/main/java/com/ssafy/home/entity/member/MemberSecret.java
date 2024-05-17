@@ -1,4 +1,4 @@
-package com.ssafy.home.domain.user.entity;
+package com.ssafy.home.entity.member;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

@@ -1,4 +1,4 @@
-package com.ssafy.home.domain.user.entity;
+package com.ssafy.home.entity.member;
 
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -34,10 +35,6 @@ public class Member {
     @Column(name = "refresh_token", length = 256)
     private String refreshToken;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
-    private MemberType memberType;
-
     @CreatedDate
     @Column(name = "create_date", columnDefinition = "datetime default CURRENT_TIMESTAMP")
     private LocalDate createDate;
@@ -53,20 +50,19 @@ public class Member {
     @OneToOne(mappedBy = "member")
     GeneralMember generalMember;
 
-    @OneToOne(mappedBy = "member")
-    SocialMember socialMember;
+    @OneToMany(mappedBy = "member")
+    List<SocialMember> socialMember;
 
     @OneToOne(mappedBy = "member")
     LoginAttempt loginAttempt;
 
 
     @Builder
-    private Member(String name, String email, String profile, String refreshToken, MemberType memberType) {
+    private Member(String name, String email, String profile, String refreshToken) {
         this.name = name;
         this.email = email;
         this.profile = profile;
         this.refreshToken = refreshToken;
-        this.memberType = memberType;
     }
 
     public void updateRefreshToken(String refreshToken){

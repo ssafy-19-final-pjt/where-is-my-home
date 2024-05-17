@@ -1,7 +1,7 @@
 package com.ssafy.home.external.oauth.service;
 
 
-import com.ssafy.home.domain.user.entity.MemberType;
+import com.ssafy.home.entity.member.MemberType;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;

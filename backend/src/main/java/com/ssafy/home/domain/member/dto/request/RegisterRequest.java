@@ -1,6 +1,6 @@
-package com.ssafy.home.domain.user.dto.request;
+package com.ssafy.home.domain.member.dto.request;
 
-import com.ssafy.home.domain.user.entity.Member;
+import com.ssafy.home.entity.member.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

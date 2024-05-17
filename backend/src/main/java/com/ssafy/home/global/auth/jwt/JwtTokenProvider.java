@@ -1,6 +1,6 @@
 package com.ssafy.home.global.auth.jwt;
 
-import com.ssafy.home.domain.user.entity.Member;
+import com.ssafy.home.entity.member.Member;
 import com.ssafy.home.global.auth.jwt.dto.JwtTokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

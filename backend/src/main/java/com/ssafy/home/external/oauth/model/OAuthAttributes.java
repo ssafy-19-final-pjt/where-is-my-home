@@ -1,8 +1,8 @@
 package com.ssafy.home.external.oauth.model;
 
 
-import com.ssafy.home.domain.user.entity.Member;
-import com.ssafy.home.domain.user.entity.MemberType;
+import com.ssafy.home.entity.member.Member;
+import com.ssafy.home.entity.member.MemberType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -16,11 +16,10 @@ public class OAuthAttributes {
     private String profile;
     private MemberType memberType;
 
-    public Member toMemberEntity(MemberType memberType) {
+    public Member toMemberEntity() {
         return Member.builder()
                 .name(name)
                 .email(email)
-                .memberType(memberType)
                 .profile(profile)
                 .build();
     }

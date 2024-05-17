@@ -1,4 +1,4 @@
-package com.ssafy.home.domain.user.dto;
+package com.ssafy.home.domain.member.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ssafy.home.global.auth.jwt.dto.JwtTokenDto;

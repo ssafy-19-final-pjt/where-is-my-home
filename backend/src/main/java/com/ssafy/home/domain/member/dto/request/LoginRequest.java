@@ -1,4 +1,4 @@
-package com.ssafy.home.domain.user.dto.request;
+package com.ssafy.home.domain.member.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

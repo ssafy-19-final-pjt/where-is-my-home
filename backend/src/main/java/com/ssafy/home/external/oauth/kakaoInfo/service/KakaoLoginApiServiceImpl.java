@@ -1,6 +1,6 @@
 package com.ssafy.home.external.oauth.kakaoInfo.service;
 
-import com.ssafy.home.domain.user.entity.MemberType;
+import com.ssafy.home.entity.member.MemberType;
 import com.ssafy.home.external.oauth.kakaoInfo.client.KakaoUserInfoClient;
 import com.ssafy.home.external.oauth.kakaoInfo.dto.KakaoUserInfoResponseDto;
 import com.ssafy.home.external.oauth.model.OAuthAttributes;

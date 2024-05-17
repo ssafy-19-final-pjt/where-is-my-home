@@ -1,4 +1,4 @@
-package com.ssafy.home.global.error;
+package com.ssafy.home.global.error.feign;
 
 import feign.FeignException;
 import feign.Response;

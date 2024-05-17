@@ -1,6 +1,6 @@
-package com.ssafy.home.domain.user.repository;
+package com.ssafy.home.domain.member.repository;
 
-import com.ssafy.home.domain.user.entity.GeneralMember;
+import com.ssafy.home.entity.member.GeneralMember;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GeneralMemberRepository extends JpaRepository<GeneralMember, Long> {

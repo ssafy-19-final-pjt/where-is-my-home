@@ -1,4 +1,4 @@
-package com.ssafy.home.domain.user.dto.response;
+package com.ssafy.home.domain.member.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

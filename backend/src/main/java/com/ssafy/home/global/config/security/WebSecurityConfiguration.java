@@ -1,6 +1,6 @@
 package com.ssafy.home.global.config.security;
 
-import com.ssafy.home.domain.user.repository.MemberRepository;
+import com.ssafy.home.domain.member.repository.MemberRepository;
 import com.ssafy.home.global.auth.jwt.JwtTokenProvider;
 import com.ssafy.home.global.auth.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
-package com.ssafy.home.domain.user.controller;
+package com.ssafy.home.domain.member.controller;
 
-import com.ssafy.home.domain.user.dto.OauthLoginDto;
-import com.ssafy.home.domain.user.entity.MemberType;
-import com.ssafy.home.domain.user.service.OauthLoginService;
+import com.ssafy.home.domain.member.dto.OauthLoginDto;
+import com.ssafy.home.entity.member.MemberType;
+import com.ssafy.home.domain.member.service.OauthLoginService;
 import com.ssafy.home.global.auth.validator.AuthorizationHeaderUtils;
 import com.ssafy.home.global.auth.validator.OauthValidator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "authentication", description = "로그인/로그아웃/토큰재발급 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/oauth")
+@RequestMapping("/oauth")
 public class OauthLoginController {
 
     private final OauthValidator oauthValidator;
@@ -37,6 +37,9 @@ public class OauthLoginController {
         String accessToken = authorizationHeader.split(" ")[1];
         OauthLoginDto.Response jwtTokenResponseDto = oauthLoginService
                 .oauthLogin(accessToken, MemberType.from(oauthLoginRequestDto.getMemberType()));
+
+
+
         return ResponseEntity.ok(jwtTokenResponseDto);
     }
 

@@ -38,7 +38,7 @@ public class KakaoTokenController {
                 .redirect_uri("http://localhost:8080/oauth/kakao/callback")
                 .build();
         KakaoTokenDto.Response kakaoToken = kakaoTokenClient.requestKakaoToken(contentType, kakaoTokenRequestDto);
-        return "kakao toekn : " + kakaoToken;
+        return "kakao token : " + kakaoToken;
     }
 
 }
