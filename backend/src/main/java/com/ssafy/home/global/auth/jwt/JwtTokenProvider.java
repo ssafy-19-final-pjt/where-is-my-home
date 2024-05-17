@@ -40,7 +40,7 @@ public class JwtTokenProvider {
     }
 
     private Date createAccessTokenExpireTime(Date now){
-        return new Date(now.getTime() + (1000L * 60));
+        return new Date(now.getTime() + (1000L * 60 * 5));
     }
 
     private Date createRefreshTokenExpireTime(Date now){
