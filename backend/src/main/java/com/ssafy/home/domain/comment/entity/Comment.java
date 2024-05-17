@@ -1,6 +1,7 @@
 package com.ssafy.home.domain.comment.entity;
 
 import com.ssafy.home.domain.board.entity.Board;
+import com.ssafy.home.domain.user.entity.Member;
 import com.ssafy.home.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,12 +27,17 @@ public class Comment extends BaseTimeEntity {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
-    private Board board;
+    private Long boardId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="member_id", nullable = false)
+    private Member member;
 
     @Builder
-    private Comment(String content) {
+    private Comment(String content, Long boardId, Member member) {
         this.content = content;
+        this.boardId = boardId;
+        this.member = member;
     }
 }
