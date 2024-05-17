@@ -13,6 +13,11 @@ public class CommentReadService {
     private final CommentRepository commentRepository;
 
     public List<Comment> getCommentFromBoardId(Long boardId){
-        commentRepository
+        return commentRepository.findAllByBoardId(boardId);
+    }
+
+    public Comment getCommentFromCommentId(Long commentId){
+        //TODO : 오류처리
+        return commentRepository.findById(commentId).orElseThrow();
     }
 }
