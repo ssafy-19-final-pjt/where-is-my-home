@@ -13,6 +13,8 @@ import com.ssafy.home.entity.member.Member;
 import com.ssafy.home.entity.member.MemberSecret;
 import com.ssafy.home.global.auth.Encryption;
 import com.ssafy.home.global.auth.jwt.JwtTokenProvider;
+import com.ssafy.home.global.error.ErrorCode;
+import com.ssafy.home.global.error.exception.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,40 +36,44 @@ public class MemberService {
     @Transactional
     public void register(RegisterRequest registerRequest) {
 
-        try{
-            if(memberRepository.existsByEmail(registerRequest.getEmail())){
-                throw new Exception("이메일 중복 error 처리 요");
-            };
-
-            String salt  = encryption.getSalt();
-            String password = encryption.Hashing(registerRequest.getPassword().getBytes(), salt);
-
-            Member member = memberRepository.save(registerRequest.toEntity());
-            GeneralMember generalMember = generalMemberRepository.save(GeneralMember.builder().member(member).userEncPassword(password).build());
-            memberSecurityRepository.save(MemberSecret.builder().generalMember(generalMember).salt(salt).build());
-            loginAttemptRepository.save(LoginAttempt.builder().member(member).build());
-
-        } catch (Exception e){
-            e.printStackTrace();
+        if (memberRepository.existsByEmail(registerRequest.getEmail())) {
+            throw new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH);
         }
+
+        String salt = encryption.getSalt();
+        String password = "";
+
+        try {
+            password = encryption.Hashing(registerRequest.getPassword().getBytes(), salt);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        Member member = memberRepository.save(registerRequest.toEntity());
+        GeneralMember generalMember = generalMemberRepository.save(GeneralMember.builder().member(member).userEncPassword(password).build());
+        memberSecurityRepository.save(MemberSecret.builder().generalMember(generalMember).salt(salt).build());
+        loginAttemptRepository.save(LoginAttempt.builder().member(member).build());
+
     }
 
     @Transactional
     public TokenResponse login(LoginRequest loginRequest) {
 
         Member member = memberRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow();
+                .orElseThrow(() -> new AuthenticationException(ErrorCode.ALREADY_REGISTERED_MEMBER));
+
+        if (member.getLoginAttempt().getCount() >= 5) {
+            throw new AuthenticationException(ErrorCode.MEMBER_COUNT_OUT);
+        }
+
         try {
-            if(member.getLoginAttempt().getCount() >= 5){
-                throw new Exception("시도 횟수 5 내일 다시 로그인 추가 요");
-            }
 
             String salt = member.getGeneralMember().getMemberSecret().getSalt();
 
             String enc_password = encryption.Hashing(loginRequest.getPassword().getBytes(), salt);
 
             if (!member.getGeneralMember().getUserEncPassword().equals(enc_password)) {
-                throw new Exception("error 처리 요");
+                throw new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH);
             }
 
             String accessToken = jwtTokenProvider.createAccessToken(member);
@@ -75,11 +81,16 @@ public class MemberService {
 
             member.getLoginAttempt().initCount();
 
+            member.updateRefreshToken(refreshToken);
+
             return TokenResponse.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .build();
 
+        } catch (AuthenticationException e){
+            member.getLoginAttempt().updateCount();
+            throw new AuthenticationException(e.getErrorCode());
         } catch (Exception e) {
             member.getLoginAttempt().updateCount();
             e.printStackTrace();
@@ -91,11 +102,11 @@ public class MemberService {
 
     public String reissue(String refreshToken) {
 
-        if(jwtTokenProvider.validateToken(refreshToken)){
+        if (jwtTokenProvider.validateToken(refreshToken)) {
             Long id = jwtTokenProvider.getInfoId(refreshToken);
 
             Member member = memberRepository.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("No member found with id: " + id));
+                    .orElseThrow(() -> new AuthenticationException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
             return jwtTokenProvider.createAccessToken(member);
         }
