@@ -21,7 +21,7 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @Column(name = "name", nullable = false, length = 20)
     private String name;
@@ -68,4 +68,5 @@ public class Member {
     public void updateRefreshToken(String refreshToken){
         this.refreshToken = refreshToken;
     }
+
 }
