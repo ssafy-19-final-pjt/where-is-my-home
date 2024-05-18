@@ -2,6 +2,7 @@ package com.ssafy.home.global.auth.filter;
 
 import com.ssafy.home.entity.member.Member;
 import com.ssafy.home.domain.member.repository.MemberRepository;
+import com.ssafy.home.global.auth.dto.MemberDto;
 import com.ssafy.home.global.auth.jwt.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -48,21 +49,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         log.info("token : {}", token);
 
-        //토큰이 Valid한지 확인하기
         if(!jwtTokenProvider.validateToken(token)){
             filterChain.doFilter(request,response);
             return;
         }
 
-        //userName 넣기, 문 열어주기
         Long userId = jwtTokenProvider.getInfoId(token);
         log.info("userId : {}", userId);
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("Error: No member found with id " + userId));
 
-        //Authenticationtoken 만들기
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(member.getId(), null, List.of(new SimpleGrantedAuthority("DEFAULT_ROLE")));
-        //디테일 설정하기
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                MemberDto.builder()
+                .id(member.getId())
+                .name(member.getName())
+                .email(member.getEmail())
+                .profile(member.getProfile())
+                .build(),
+                null, List.of(new SimpleGrantedAuthority("DEFAULT_ROLE")));
+
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request, response);

@@ -56,8 +56,12 @@ dependencies {
 	// openfeign
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
-	// 카카오 테스트를 위해 임시 추가
+	// 카카오 로그인, 메일 html 설정
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
+	// 이메일 전송 (비밀번호 찾기)
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 dependencyManagement {

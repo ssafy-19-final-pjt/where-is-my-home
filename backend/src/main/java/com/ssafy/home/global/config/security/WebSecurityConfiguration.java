@@ -26,10 +26,12 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberService memberService;
 
+    private final String[] REQUIRE_AUTH_PATH = {"/health/**", "member/logout", "member/info", "member/pw"};
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatchers((auth) -> auth.requestMatchers("/health/**"));
+                .securityMatchers((auth) -> auth.requestMatchers(REQUIRE_AUTH_PATH));
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement((session) -> session
@@ -47,24 +49,17 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
     public WebSecurityCustomizer webSecurityCustomizer() {
 
         return web -> web.ignoring().requestMatchers("/auth/social/**",
-         "swagger-ui/index.html", "/users/profile", "/v1/users/{id}",
+         "swagger-ui/index.html", "/v1/users/{id}",
          "/swagger-ui/**",
          "/swagger-resources/**",
          "/v3/api-docs/**",
          "/api-docs/**",
-         "/api-docs", "/user/login");
+         "/api-docs", "/member/login");
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new UserActivationInterceptor(memberService))
-                .excludePathPatterns("/auth/social/**",
-                        "swagger-ui/index.html", "/users/profile", "/v1/users/{id}",
-                        "/swagger-ui/**",
-                        "/swagger-resources/**",
-                        "/v3/api-docs/**",
-                        "/api-docs/**",
-                        "/api-docs",
-                        "/user/login");
+                .addPathPatterns(REQUIRE_AUTH_PATH);
     }
 }

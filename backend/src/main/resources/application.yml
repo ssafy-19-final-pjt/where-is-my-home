@@ -20,6 +20,18 @@ spring:
       hibernate:
         show_sql: true
         use_sql_comments: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail.username}
+    password: ${mail.password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
 
 logging:
   level:
@@ -31,3 +43,11 @@ feign:
       default:
         connectTimeout: 5000
         readTimeout: 5000
+
+jwt:
+  secret: ${jwt.secret}
+
+kakao:
+  client:
+    id: ${client.id}
+    secret: ${client.secret}

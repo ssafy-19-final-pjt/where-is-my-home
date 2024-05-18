@@ -10,7 +10,7 @@ public class SocialMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)

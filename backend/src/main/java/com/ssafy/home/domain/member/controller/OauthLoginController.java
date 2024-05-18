@@ -1,14 +1,16 @@
 package com.ssafy.home.domain.member.controller;
 
 import com.ssafy.home.domain.member.dto.OauthLoginDto;
-import com.ssafy.home.entity.member.MemberType;
 import com.ssafy.home.domain.member.service.OauthLoginService;
+import com.ssafy.home.entity.member.MemberType;
 import com.ssafy.home.global.auth.validator.AuthorizationHeaderUtils;
 import com.ssafy.home.global.auth.validator.OauthValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +28,7 @@ public class OauthLoginController {
 
     @Tag(name = "authentication")
     @Operation(summary = "소셜 로그인 API", description = "소셜 로그인 API")
-    @PostMapping("/login")
+    @PostMapping(path = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OauthLoginDto.Response> oauthLogin(@RequestBody OauthLoginDto.Request oauthLoginRequestDto,
                                                              HttpServletRequest httpServletRequest) {
 
@@ -38,9 +40,7 @@ public class OauthLoginController {
         OauthLoginDto.Response jwtTokenResponseDto = oauthLoginService
                 .oauthLogin(accessToken, MemberType.from(oauthLoginRequestDto.getMemberType()));
 
-
-
-        return ResponseEntity.ok(jwtTokenResponseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(jwtTokenResponseDto);
     }
 
 }
