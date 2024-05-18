@@ -18,13 +18,17 @@ import java.util.Arrays;
 
 @Tag(name = "member", description = "회원 API")
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
+    private final RefreshTokenValidator refreshTokenValidator;
+    private final MemberRepository memberRepository;
 
-    @PostMapping("/")
+    @Tag(name = "authentication")
+    @Operation(summary = "일반 회원가입 API", description = "일반 회원가입 API")
+    @PostMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest){
 
         memberService.register(registerRequest);
@@ -32,6 +36,8 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body("signup success");
     }
 
+    @Tag(name = "authentication")
+    @Operation(summary = "일반 로그인 API", description = "일반 로그인 API")
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
 
@@ -48,6 +54,8 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body("token success");
     }
 
+    @Tag(name = "authentication")
+    @Operation(summary = "액세스 토큰 재발급 API", description = "액세스 토큰 재발급 API")
     @GetMapping("/accessToken")
     public ResponseEntity<String> createAccessToken(HttpServletRequest request, HttpServletResponse response){
 
