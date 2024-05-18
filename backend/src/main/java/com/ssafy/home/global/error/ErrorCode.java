@@ -25,6 +25,13 @@ public enum ErrorCode {
     MEMBER_COUNT_OUT(HttpStatus.BAD_REQUEST, "M-004", "해당 회원 로그인 시도 횟수가 초과되었습니다. (비밀번호 변경이 필요합니다.)"),
     MEMBER_NOT_MATCH(HttpStatus.BAD_REQUEST, "M-005", " 아이디(로그인 전용 아이디) 또는 비밀번호를 잘못 입력했습니다.\n" +
             "입력하신 내용을 다시 확인해주세요."),
+
+
+    // 암호화
+    INVALID_AES_KEY(HttpStatus.BAD_REQUEST, "C-001", "암호화 에러"),
+
+    // 이메일
+    EMAIL_FAIL(HttpStatus.BAD_REQUEST, "E-001", "이메일 전송 에러")
     ;
 
     ErrorCode(HttpStatus httpStatus, String errorCode, String message) {
