@@ -153,6 +153,7 @@ public class MemberService {
     private final String MAIL_TITLE = "where-is-my-home의 비밀번호 변경 이메일 입니다.";
 
     @Transactional
+    @Async("mailExecutor")
     public void sendPassword(String email) {
 
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH));
