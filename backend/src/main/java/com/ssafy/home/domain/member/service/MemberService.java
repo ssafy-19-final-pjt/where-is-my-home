@@ -58,11 +58,15 @@ public class MemberService {
 
         Member member = memberRepository.save(Member.builder()
                 .name(name)
-                .email(email)
-                .build());
-        GeneralMember generalMember = generalMemberRepository.save(GeneralMember.builder().member(member).userEncPassword(password).build());
-        memberSecurityRepository.save(MemberSecret.builder().generalMember(generalMember).salt(salt).build());
-        loginAttemptRepository.save(LoginAttempt.builder().member(member).build());
+                .email(email).build());
+        GeneralMember generalMember = generalMemberRepository.save(GeneralMember.builder()
+                .member(member)
+                .userEncPassword(password).build());
+        memberSecurityRepository.save(MemberSecret.builder()
+                .generalMember(generalMember)
+                .salt(salt).build());
+        loginAttemptRepository.save(LoginAttempt.builder()
+                .member(member).build());
     }
 
     @Transactional
