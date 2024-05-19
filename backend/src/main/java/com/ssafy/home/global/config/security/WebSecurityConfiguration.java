@@ -40,7 +40,7 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new JwtAuthenticationFilter(memberRepository, jwtTokenProvider), BasicAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, memberService), BasicAuthenticationFilter.class);
 
         return http.build();
     }

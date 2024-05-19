@@ -41,7 +41,7 @@ public class MemberController {
     @PostMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest){
 
-        memberService.register(registerRequest);
+        memberService.register(registerRequest.getEmail(), registerRequest.getPassword(), registerRequest.getName());
 
         return ResponseEntity.status(HttpStatus.OK).body("signup success");
     }
@@ -51,7 +51,7 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
 
-        TokenResponse tokenResponse = memberService.login(loginRequest);
+        TokenResponse tokenResponse = memberService.login(loginRequest.getEmail(), loginRequest.getPassword());
 
         response.addHeader(JwtTokenProvider.AUTHORIZATION_HEADER, tokenResponse.getAccessToken());
 

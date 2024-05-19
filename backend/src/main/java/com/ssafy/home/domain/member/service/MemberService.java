@@ -1,7 +1,5 @@
 package com.ssafy.home.domain.member.service;
 
-import com.ssafy.home.domain.member.dto.request.LoginRequest;
-import com.ssafy.home.domain.member.dto.request.RegisterRequest;
 import com.ssafy.home.domain.member.dto.response.TokenResponse;
 import com.ssafy.home.domain.member.repository.GeneralMemberRepository;
 import com.ssafy.home.domain.member.repository.LoginAttemptRepository;
@@ -44,32 +42,33 @@ public class MemberService {
     private final Encryption encryption;
 
     @Transactional
-    public void register(RegisterRequest registerRequest) {
+    public void register(String email, String password, String name) {
 
-        if (memberRepository.existsByEmail(registerRequest.getEmail())) {
+        if (memberRepository.existsByEmail(email)) {
             throw new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH);
         }
 
         String salt = encryption.getSalt();
-        String password = "";
 
         try {
-            password = encryption.Hashing(registerRequest.getPassword().getBytes(), salt);
+            password = encryption.Hashing(password.getBytes(), salt);
         } catch (Exception e) {
             throw new BusinessException(ErrorCode.INVALID_AES_KEY);
         }
 
-        Member member = memberRepository.save(registerRequest.toEntity());
+        Member member = memberRepository.save(Member.builder()
+                .name(name)
+                .email(email)
+                .build());
         GeneralMember generalMember = generalMemberRepository.save(GeneralMember.builder().member(member).userEncPassword(password).build());
         memberSecurityRepository.save(MemberSecret.builder().generalMember(generalMember).salt(salt).build());
         loginAttemptRepository.save(LoginAttempt.builder().member(member).build());
-
     }
 
     @Transactional
-    public TokenResponse login(LoginRequest loginRequest) {
+    public TokenResponse login(String email, String password) {
 
-        Member member = memberRepository.findByEmail(loginRequest.getEmail())
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH));
 
         if (member.getLoginAttempt().getCount() >= 5) {
@@ -80,7 +79,7 @@ public class MemberService {
 
             String salt = member.getGeneralMember().getMemberSecret().getSalt();
 
-            String encPassword = encryption.Hashing(loginRequest.getPassword().getBytes(), salt);
+            String encPassword = encryption.Hashing(password.getBytes(), salt);
 
             if (!member.getGeneralMember().getUserEncPassword().equals(encPassword)) {
                 throw new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH);
