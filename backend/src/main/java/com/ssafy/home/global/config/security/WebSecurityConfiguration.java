@@ -26,7 +26,7 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberService memberService;
 
-    private final String[] REQUIRE_AUTH_PATH = {"/health/**", "member/logout", "member/info", "member/pw"};
+    private final String[] REQUIRE_AUTH_PATH = {"/health/**", "member/logout", "member/info", "member/pw", "/board/**", "/comment/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
