@@ -102,7 +102,7 @@ public class JwtTokenProvider {
             // parseClaimsJws가 만료시간을 체크해서 확인할 필요 없음
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            throw new AuthenticationException(ErrorCode.NOT_VALID_TOKEN);
         }
     }
 
