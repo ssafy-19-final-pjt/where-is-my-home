@@ -1,6 +1,5 @@
 package com.ssafy.home.global.auth.filter;
 
-import com.ssafy.home.domain.member.repository.MemberRepository;
 import com.ssafy.home.domain.member.service.MemberService;
 import com.ssafy.home.entity.member.Member;
 import com.ssafy.home.global.auth.dto.MemberDto;
@@ -20,17 +19,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberRepository memberRepository;
     private final MemberService memberService;
 
     // Jwt Provier 주입
-    public JwtAuthenticationFilter(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider, MemberService memberService) {
-        this.memberRepository = memberRepository;
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, MemberService memberService) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.memberService = memberService;
     }
@@ -75,8 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         Long userId = jwtTokenProvider.getInfoId(token);
         log.info("userId : {}", userId);
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("Error: No member found with id " + userId));
+        Member member = memberService.getMemberById(userId);
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 MemberDto.builder()
