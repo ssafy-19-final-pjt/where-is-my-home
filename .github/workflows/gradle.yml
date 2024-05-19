@@ -24,10 +24,10 @@ jobs:
     - name : Copy properties
       env:
         privacy_yml : ${{ secrets.PRIVACY_YML }}
-        privacy_yml_dir : src/main/resources
+        privacy_yml_dir : ./src/main/resources
         privacy_yml_FILE_NAME : privacy.yml
       run: |
-        cd src/main/resources
+        cd $privacy_yml_dir
         echo $privacy_yml | base64 --decode > $privacy_yml_dir/$privacy_yml_FILE_NAME
 
     - name: Setup Gradle
