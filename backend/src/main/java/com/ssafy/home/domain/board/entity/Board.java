@@ -37,6 +37,7 @@ public class Board extends BaseTimeEntity {
     @OneToMany(mappedBy = "board")
     List<Comment> commentList = new ArrayList<>();
 
+    public void increaseHit(){this.hit++;}
     @Builder
     private Board(String title, String content, int hit, Member member) {
         this.title = title;

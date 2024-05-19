@@ -2,11 +2,11 @@ package com.ssafy.home.domain.board.dto.request;
 
 import com.ssafy.home.domain.board.entity.Board;
 import com.ssafy.home.entity.member.Member;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 public class BoardCreateDto {
     private String title;
     private String content;
