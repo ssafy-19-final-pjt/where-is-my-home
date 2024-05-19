@@ -24,7 +24,6 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    // Header KEY 값
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
     // openssl rand -hex 32
@@ -40,7 +39,7 @@ public class JwtTokenProvider {
     }
 
     private Date createAccessTokenExpireTime(Date now){
-        return new Date(now.getTime() + (1000L * 60 * 5));
+        return new Date(now.getTime() + (1000L * 60 * 1));
     }
 
     private Date createRefreshTokenExpireTime(Date now){
@@ -93,19 +92,16 @@ public class JwtTokenProvider {
         return token;
     }
 
-    // Jwt Token의 유효성 및 만료 기간 검사합니다
     public boolean validateToken(String jwtToken) {
         try {
             Jws<Claims> claims = Jwts
                     .parser().verifyWith(this.secretKey).build()
                     .parseSignedClaims(jwtToken);
-            // parseClaimsJws가 만료시간을 체크해서 확인할 필요 없음
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            throw new AuthenticationException(ErrorCode.NOT_VALID_TOKEN);
+            return false;
         }
     }
-
 
     public Long getInfoId(String token) {
         return parseJson(token).getLong("id");

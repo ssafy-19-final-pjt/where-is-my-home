@@ -1,11 +1,13 @@
 package com.ssafy.home.global.auth.filter;
 
-import com.ssafy.home.entity.member.Member;
 import com.ssafy.home.domain.member.repository.MemberRepository;
+import com.ssafy.home.domain.member.service.MemberService;
+import com.ssafy.home.entity.member.Member;
 import com.ssafy.home.global.auth.dto.MemberDto;
 import com.ssafy.home.global.auth.jwt.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -23,11 +26,13 @@ import java.util.NoSuchElementException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     // Jwt Provier 주입
-    public JwtAuthenticationFilter(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public JwtAuthenticationFilter(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider, MemberService memberService) {
         this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.memberService = memberService;
     }
 
     @Override
@@ -50,8 +55,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         log.info("token : {}", token);
 
         if(!jwtTokenProvider.validateToken(token)){
-            filterChain.doFilter(request,response);
-            return;
+
+            Cookie[] cookies = request.getCookies();
+
+            String refreshToken = null;
+
+            if (cookies != null) {
+                refreshToken =  Arrays.stream(cookies)
+                        .filter(cookie -> cookie.getName().equals("refreshToken"))
+                        .map(Cookie::getValue)
+                        .findFirst()
+                        .orElse(null);
+            }
+
+            token = memberService.reissue(refreshToken);
+
+            response.addHeader(JwtTokenProvider.AUTHORIZATION_HEADER, token);
         }
 
         Long userId = jwtTokenProvider.getInfoId(token);
