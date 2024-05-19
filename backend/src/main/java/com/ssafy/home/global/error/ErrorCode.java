@@ -31,7 +31,11 @@ public enum ErrorCode {
     INVALID_AES_KEY(HttpStatus.BAD_REQUEST, "C-001", "암호화 에러"),
 
     // 이메일
-    EMAIL_FAIL(HttpStatus.BAD_REQUEST, "E-001", "이메일 전송 에러")
+    EMAIL_FAIL(HttpStatus.BAD_REQUEST, "E-001", "이메일 전송 에러"),
+
+    // 게시판
+    BOARD_NOT_FOUND(HttpStatus.BAD_REQUEST, "B-001", "찾고자 하는 게시글이 존재하지 않습니다."),
+    CANNOT_DELETE_BOARD_YOU_NOT_CREATE(HttpStatus.BAD_REQUEST, "B-002", "자신이 작성하지 않은 게시글을 삭제할 수 없습니다.");
     ;
 
     ErrorCode(HttpStatus httpStatus, String errorCode, String message) {
