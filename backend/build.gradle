@@ -31,7 +31,7 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
 	//mysql
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
@@ -60,6 +60,10 @@ dependencies {
 
 	// 이메일 전송 (비밀번호 찾기)
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	// test 환경에서는 h2 사용
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'com.h2database:h2'
 }
 
 dependencyManagement {
