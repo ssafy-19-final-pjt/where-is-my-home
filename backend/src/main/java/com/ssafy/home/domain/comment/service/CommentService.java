@@ -8,6 +8,9 @@ import com.ssafy.home.domain.comment.dto.response.CommentResponseDto;
 import com.ssafy.home.domain.comment.entity.Comment;
 import com.ssafy.home.domain.member.service.MemberService;
 import com.ssafy.home.entity.member.Member;
+import com.ssafy.home.global.auth.dto.MemberDto;
+import com.ssafy.home.global.error.ErrorCode;
+import com.ssafy.home.global.error.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,41 +27,49 @@ public class CommentService{
     private final CommentResponseMapper commentResponseMapper;
 
     public List<CommentResponseDto> getCommentAll(Long boardId) {
-        return commentResponseMapper.toListCommentResponse(commentReadService.getCommentFromBoardId(boardId));
+        Board board = boardReadService.getBoard(boardId);
+        return commentResponseMapper.toListCommentResponse(board.getCommentList());
     }
 
     @Transactional
-    public void createComment(Long memberId, Long boardId, CommentRequestDto commentRequestDto) {
-        Member member = memberService.getMemberById(memberId);
+    public void createComment(MemberDto memberDto, Long boardId, CommentRequestDto commentRequestDto) {
+        Member member = memberService.getMemberById(memberDto.getId());
         Board board = boardReadService.getBoard(boardId);
 
         commentWriteService.create(member, board, commentRequestDto);
     }
 
     @Transactional
-    public void updateComment(Long memberId, Long boardId, Long commentId, CommentRequestUpdateDto commentRequestUpdateDto) {
-        Member member = memberService.getMemberById(memberId);
+    public void updateComment(MemberDto memberDto, Long boardId, Long commentId, CommentRequestUpdateDto commentRequestUpdateDto) {
+        Member member = memberService.getMemberById(memberDto.getId());
         Board board = boardReadService.getBoard(boardId);
         Comment comment = commentReadService.getComment(commentId);
 
-        if(member.getId()!= comment.getMember().getId()){
-            //TODO : 오류처리
-//            throw new BadRequestException();
-            return;
+        if(member.getId() != comment.getMember().getId()){
+            throw new BadRequestException(ErrorCode.CANNOT_UPDATE_COMMENT_YOU_NOT_CREATE);
         }
+
+        if(board.getId() != comment.getBoard().getId()){
+            throw new BadRequestException(ErrorCode.BOARD_MISMATCH_FROM_BOARD, "게시글에 해당 댓글이 존재하지 않습니다.");
+        }
+
         comment.updateContent(commentRequestUpdateDto.getContent());
     }
 
     @Transactional
-    public void deleteComment(Long memberId, Long boardId, Long commentId) {
-        Member member = memberService.getMemberById(memberId);
+    public void deleteComment(MemberDto memberDto, Long boardId, Long commentId) {
+        Member member = memberService.getMemberById(memberDto.getId());
         Board board = boardReadService.getBoard(boardId);
         Comment comment = commentReadService.getComment(commentId);
         
         if(member.getId()!= comment.getMember().getId()){
-            //TODO : 오류처리
-            return;
+            throw new BadRequestException(ErrorCode.CANNOT_DELETE_COMMENT_YOU_NOT_CREATE);
         }
-        commentWriteService.delete(member, board, comment);
+
+        if(board.getId() != comment.getBoard().getId()){
+            throw new BadRequestException(ErrorCode.BOARD_MISMATCH_FROM_BOARD, "게시글에 해당 댓글이 존재하지 않습니다.");
+        }
+
+        commentWriteService.delete(comment);
     }
 }
