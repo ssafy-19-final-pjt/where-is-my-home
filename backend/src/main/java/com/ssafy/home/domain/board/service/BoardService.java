@@ -5,6 +5,9 @@ import com.ssafy.home.domain.board.dto.response.BoardResponseDto;
 import com.ssafy.home.domain.board.entity.Board;
 import com.ssafy.home.domain.member.service.MemberService;
 import com.ssafy.home.entity.member.Member;
+import com.ssafy.home.global.auth.dto.MemberDto;
+import com.ssafy.home.global.error.ErrorCode;
+import com.ssafy.home.global.error.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,27 +29,24 @@ public class BoardService {
         return boardResponseMapper.toListBoardResponse(boardReadService.getAllBoardList());
     }
 
-    public BoardResponseDto getBoard(Long memberId, Long boardId) {
+    public BoardResponseDto getBoard(Long boardId) {
         return boardResponseMapper.toBoardResponse(boardReadService.getBoard(boardId));
     }
 
     @Transactional
-    public void create(Long memberId, BoardCreateDto boardCreateDto) {
-        Member member = memberService.getMemberById(memberId);
+    public void create(MemberDto memberDto, BoardCreateDto boardCreateDto) {
+        Member member = memberService.getMemberById(memberDto.getId());
         Board board = boardCreateDto.toEntity(member);
 
         boardWriteService.createBoard(board);
     }
 
     @Transactional
-    public void delete(Long memberId, Long boardId) {
-        Member member = memberService.getMemberById(memberId);
+    public void delete(MemberDto memberDto, Long boardId) {
         Board board = boardReadService.getBoard(boardId);
 
-        //TODO : 리팩토링 필요
-        if(board.getMember().getId()!=member.getId()){
-//            throw new BadRequestException("올바른 사용자가 아닙니다.");
-            return;
+        if(board.getMember().getId() != memberDto.getId()){
+            throw new BadRequestException(ErrorCode.CANNOT_DELETE_BOARD_YOU_NOT_CREATE);
         }
 
         boardWriteService.deleteBoard(board);
