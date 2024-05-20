@@ -45,7 +45,7 @@ public class MemberService {
     public void register(String email, String password, String name) {
 
         if (memberRepository.existsByEmail(email)) {
-            throw new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH);
+            throw new AuthenticationException(ErrorCode.ALREADY_REGISTERED_MEMBER);
         }
 
         String salt = encryption.getSalt();
@@ -103,7 +103,7 @@ public class MemberService {
 
         } catch (AuthenticationException e){
             member.getLoginAttempt().updateCount();
-            throw new AuthenticationException(e.getErrorCode());
+            throw new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH);
         } catch (Exception e) {
             member.getLoginAttempt().updateCount();
             e.printStackTrace();
