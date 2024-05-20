@@ -181,4 +181,11 @@ public class MemberService {
             throw new BusinessException(ErrorCode.EMAIL_FAIL);
         }
     }
+
+    @Transactional
+    public void initAttempt(){
+        loginAttemptRepository.findAll().stream()
+                .filter(loginAttempt -> loginAttempt.getCount() >= 5)
+                .forEach(LoginAttempt::initCount);
+    }
 }
