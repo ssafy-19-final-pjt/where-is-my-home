@@ -147,7 +147,7 @@ class CommentServiceTest extends TestConfig {
 
             CommentRequestDto commentRequestDto = CommentRequestDto.builder().content("test").build();
 
-            ExecutorService executorService = Executors.newFixedThreadPool(2);
+            ExecutorService executorService = Executors.newFixedThreadPool(20);
             CountDownLatch latch = new CountDownLatch(threadCount);
 
             AtomicInteger hitCount = new AtomicInteger(0);
