@@ -1,6 +1,5 @@
 package com.ssafy.home.global.config.security;
 
-import com.ssafy.home.domain.member.repository.MemberRepository;
 import com.ssafy.home.domain.member.service.MemberService;
 import com.ssafy.home.global.auth.filter.JwtAuthenticationFilter;
 import com.ssafy.home.global.auth.interceptor.UserActivationInterceptor;
@@ -22,7 +21,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 @EnableWebSecurity(debug = true)
 public class WebSecurityConfiguration implements WebMvcConfigurer {
-    private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberService memberService;
 
