@@ -7,9 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 @Order(Ordered.LOWEST_PRECEDENCE-1)
 @Aspect
+@Component
 public class RetryAspect {
     private static final Logger log = LoggerFactory.getLogger(RetryAspect.class);
 

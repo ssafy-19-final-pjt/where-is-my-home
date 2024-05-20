@@ -38,16 +38,19 @@ class CommentServiceTest extends TestConfig {
         this.boardRepository = boardRepository;
     }
 
-
     @BeforeEach
     void before() {
         member = memberService.getMemberById(11L);
-        board = boardRepository.findById(11L).orElseThrow(() -> new RuntimeException());
+        board = boardRepository.save(Board.builder()
+                .content("test")
+                .member(member)
+                .title("testTitled")
+                .build());
         memberDto = MemberDto.builder().id(member.getId()).name(member.getName()).build();
     }
 
     @Nested
-    class Commnet {
+    class Comment {
         @Test
         @Transactional
         void 성공_조회수_추가() {
