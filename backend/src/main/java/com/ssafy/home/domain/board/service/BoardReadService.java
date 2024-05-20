@@ -22,4 +22,8 @@ public class BoardReadService {
         return boardRepository.findById(boardId)
                 .orElseThrow(()->new BadRequestException(ErrorCode.BOARD_NOT_FOUND, "게시글이 존재하지 않습니다 :" + boardId));
     }
+
+    public Board getboardWithPessimisticLock(Long boardId) {
+        return boardRepository.findByIdPessimisticLock(boardId).orElseThrow();
+    }
 }

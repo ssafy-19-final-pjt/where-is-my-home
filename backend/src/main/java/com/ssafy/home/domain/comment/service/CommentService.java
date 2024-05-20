@@ -40,6 +40,14 @@ public class CommentService{
     }
 
     @Transactional
+    public void createCommentWithPessimisticLock(MemberDto memberDto, Long boardId, CommentRequestDto commentRequestDto){
+        Member member = memberService.getMemberById(memberDto.getId());
+        Board board = boardReadService.getboardWithPessimisticLock(boardId);
+
+        commentWriteService.create(member, board, commentRequestDto);
+    }
+
+    @Transactional
     public void updateComment(MemberDto memberDto, Long boardId, Long commentId, CommentRequestUpdateDto commentRequestUpdateDto) {
         Member member = memberService.getMemberById(memberDto.getId());
         Board board = boardReadService.getBoard(boardId);
