@@ -10,7 +10,9 @@ import com.ssafy.home.entity.member.LoginAttempt;
 import com.ssafy.home.entity.member.Member;
 import com.ssafy.home.entity.member.MemberSecret;
 import com.ssafy.home.global.auth.Encryption;
+import com.ssafy.home.global.auth.constant.EmailConstraints;
 import com.ssafy.home.global.auth.jwt.JwtTokenProvider;
+import com.ssafy.home.global.auth.util.SendEmailLogic;
 import com.ssafy.home.global.error.ErrorCode;
 import com.ssafy.home.global.error.exception.AuthenticationException;
 import com.ssafy.home.global.error.exception.BusinessException;
@@ -23,8 +25,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @Service
 @RequiredArgsConstructor
@@ -37,15 +37,15 @@ public class MemberService {
     private final LoginAttemptRepository loginAttemptRepository;
 
     private final JavaMailSender javaMailSender;
-    private final SpringTemplateEngine templateEngine;
     private final JwtTokenProvider jwtTokenProvider;
     private final Encryption encryption;
+    private final SendEmailLogic sendEmailLogic;
 
     @Transactional
     public void register(String email, String password, String name) {
 
         if (memberRepository.existsByEmail(email)) {
-            throw new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH);
+            throw new AuthenticationException(ErrorCode.ALREADY_REGISTERED_MEMBER);
         }
 
         String salt = encryption.getSalt();
@@ -58,11 +58,15 @@ public class MemberService {
 
         Member member = memberRepository.save(Member.builder()
                 .name(name)
-                .email(email)
-                .build());
-        GeneralMember generalMember = generalMemberRepository.save(GeneralMember.builder().member(member).userEncPassword(password).build());
-        memberSecurityRepository.save(MemberSecret.builder().generalMember(generalMember).salt(salt).build());
-        loginAttemptRepository.save(LoginAttempt.builder().member(member).build());
+                .email(email).build());
+        GeneralMember generalMember = generalMemberRepository.save(GeneralMember.builder()
+                .member(member)
+                .userEncPassword(password).build());
+        memberSecurityRepository.save(MemberSecret.builder()
+                .generalMember(generalMember)
+                .salt(salt).build());
+        loginAttemptRepository.save(LoginAttempt.builder()
+                .member(member).build());
     }
 
     @Transactional
@@ -99,7 +103,7 @@ public class MemberService {
 
         } catch (AuthenticationException e){
             member.getLoginAttempt().updateCount();
-            throw new AuthenticationException(e.getErrorCode());
+            throw new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH);
         } catch (Exception e) {
             member.getLoginAttempt().updateCount();
             e.printStackTrace();
@@ -149,15 +153,13 @@ public class MemberService {
         member.getGeneralMember().updatePassword(encPassword);
     }
 
-    private final String MAIL_TITLE = "where-is-my-home의 비밀번호 변경 이메일 입니다.";
-
     @Transactional
     @Async("mailExecutor")
     public void sendPassword(String email) {
 
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH));
 
-        String newPassword = makeRandomPassword();
+        String newPassword = sendEmailLogic.makeRandomPassword();
 
         try {
             String encPassword = encryption.Hashing(newPassword.getBytes(),member.getGeneralMember().getMemberSecret().getSalt());
@@ -171,8 +173,8 @@ public class MemberService {
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             mimeMessageHelper.setTo(email); // 메일 수신자
-            mimeMessageHelper.setSubject(MAIL_TITLE); // 메일 제목
-            mimeMessageHelper.setText(setContext(newPassword, "password"), true); // 메일 본문 내용, HTML 여부
+            mimeMessageHelper.setSubject(EmailConstraints.MAIL_TITLE); // 메일 제목
+            mimeMessageHelper.setText(sendEmailLogic.setContext(newPassword, "password"), true); // 메일 본문 내용, HTML 여부
             javaMailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
@@ -180,25 +182,10 @@ public class MemberService {
         }
     }
 
-
-    static char[] charSet = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
-            'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
-
-    private String makeRandomPassword(){
-
-        StringBuilder pw = new StringBuilder();
-
-        for (int i = 0; i < 10; i++) {
-            int idx = (int) (charSet.length * Math.random());
-            pw.append(charSet[idx]);
-        }
-
-        return String.valueOf(pw);
-    }
-
-    public String setContext(String code, String type) {
-        Context context = new Context();
-        context.setVariable("code", code);
-        return templateEngine.process(type, context);
+    @Transactional
+    public void initAttempt(){
+        loginAttemptRepository.findAll().stream()
+                .filter(loginAttempt -> loginAttempt.getCount() >= 5)
+                .forEach(LoginAttempt::initCount);
     }
 }

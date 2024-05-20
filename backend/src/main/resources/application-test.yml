@@ -1,0 +1,22 @@
+spring:
+  sql:
+    init:
+      mode: always
+
+  datasource:
+    url: jdbc:h2:mem:test
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    #데이터베이스 초기화를 지연시키는 옵션. true 로 설정을하면 애플리케이션이 실행될 때 db를 초기화하지 않고 첫 데이터베이스 액세스 시 초기화를 수행(data.sql문 실행)한다.
+    defer-datasource-initialization: true
+    generate-ddl: true
