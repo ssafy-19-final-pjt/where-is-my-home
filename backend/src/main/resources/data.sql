@@ -9,3 +9,5 @@ VALUES (11, '7b6fcbe49833ef658d3f87e2cec1b83c', DEFAULT);
 
 INSERT INTO login_attempt (count, login_recent_attemp, member_id, id)
 VALUES (0, TIMESTAMP '2024-05-19 00:00:00', 11, DEFAULT);
+
+INSERT INTO board (content,create_date,hit,member_id,modify_date,title,no) VALUES ('testContent',TIMESTAMP '2024-05-19 00:00:00',0,11,TIMESTAMP '2024-05-19 00:00:00','testTitle',11)
