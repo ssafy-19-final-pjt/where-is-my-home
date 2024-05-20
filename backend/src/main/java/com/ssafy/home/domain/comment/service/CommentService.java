@@ -8,6 +8,7 @@ import com.ssafy.home.domain.comment.dto.response.CommentResponseDto;
 import com.ssafy.home.domain.comment.entity.Comment;
 import com.ssafy.home.domain.member.service.MemberService;
 import com.ssafy.home.entity.member.Member;
+import com.ssafy.home.global.aop.retry.Retry;
 import com.ssafy.home.global.auth.dto.MemberDto;
 import com.ssafy.home.global.error.ErrorCode;
 import com.ssafy.home.global.error.exception.BadRequestException;
@@ -48,6 +49,15 @@ public class CommentService{
     }
 
     @Transactional
+    @Retry
+    public void createCommentWithOptimisticLock(MemberDto memberDto, Long boardId, CommentRequestDto commentRequestDto) {
+        Member member = memberService.getMemberById(memberDto.getId());
+        Board board = boardReadService.getBoardWithOptimisticLock(boardId);
+
+        commentWriteService.create(member, board, commentRequestDto);
+    }
+
+    @Transactional
     public void updateComment(MemberDto memberDto, Long boardId, Long commentId, CommentRequestUpdateDto commentRequestUpdateDto) {
         Member member = memberService.getMemberById(memberDto.getId());
         Board board = boardReadService.getBoard(boardId);
@@ -69,7 +79,7 @@ public class CommentService{
         Member member = memberService.getMemberById(memberDto.getId());
         Board board = boardReadService.getBoard(boardId);
         Comment comment = commentReadService.getComment(commentId);
-        
+
         if(member.getId()!= comment.getMember().getId()){
             throw new BadRequestException(ErrorCode.CANNOT_DELETE_COMMENT_YOU_NOT_CREATE);
         }

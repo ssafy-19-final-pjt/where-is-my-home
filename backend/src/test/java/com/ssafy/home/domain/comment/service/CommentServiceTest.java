@@ -104,7 +104,7 @@ class CommentServiceTest extends TestConfig {
         }
 
         @Test
-        void 동시성_테스트_낙관적_락_사용() throws InterruptedException {
+        void 동시성_테스트_비관적_락_사용() throws InterruptedException {
             int threadCount = 100;
 
             CommentRequestDto commentRequestDto = CommentRequestDto.builder().content("test").build();
@@ -119,6 +119,41 @@ class CommentServiceTest extends TestConfig {
                 executorService.execute(() -> {
                     try {
                         commentService.createCommentWithPessimisticLock(memberDto, board.getId(), commentRequestDto);
+                        hitCount.incrementAndGet();
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        missCount.incrementAndGet();
+                    } finally {
+                        latch.countDown();
+                    }
+                });
+            }
+            latch.await();
+
+            System.out.println("hitCount = " + hitCount);
+            System.out.println("missCount = " + missCount);
+
+            Board newBoard = boardRepository.findById(board.getId()).orElseThrow();
+
+            assertThat(newBoard.getHit()).isEqualTo(100);
+        }
+
+        @Test
+        void 동시성_테스트_낙관적_락_사용() throws InterruptedException {
+            int threadCount = 100;
+
+            CommentRequestDto commentRequestDto = CommentRequestDto.builder().content("test").build();
+
+            ExecutorService executorService = Executors.newFixedThreadPool(2);
+            CountDownLatch latch = new CountDownLatch(threadCount);
+
+            AtomicInteger hitCount = new AtomicInteger(0);
+            AtomicInteger missCount = new AtomicInteger(0);
+
+            for (int i = 0; i < threadCount; i++) {
+                executorService.execute(() -> {
+                    try {
+                        commentService.createCommentWithOptimisticLock(memberDto, board.getId(), commentRequestDto);
                         hitCount.incrementAndGet();
                     } catch (Exception e) {
                         System.out.println(e.getMessage());

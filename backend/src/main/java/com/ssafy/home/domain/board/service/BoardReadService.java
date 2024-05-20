@@ -26,4 +26,8 @@ public class BoardReadService {
     public Board getboardWithPessimisticLock(Long boardId) {
         return boardRepository.findByIdPessimisticLock(boardId).orElseThrow();
     }
+
+    public Board getBoardWithOptimisticLock(Long boardId) {
+        return boardRepository.findByIdOptimisticLock(boardId).orElseThrow();
+    }
 }

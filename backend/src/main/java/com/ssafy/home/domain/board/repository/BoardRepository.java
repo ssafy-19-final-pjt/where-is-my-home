@@ -23,4 +23,9 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select b from Board b where b.id = :id")
     Optional<Board> findByIdPessimisticLock(@Param("id") Long id);
+
+
+    @Lock(LockModeType.OPTIMISTIC)
+    @Query("select b from Board b where b.id = :id")
+    Optional<Board> findByIdOptimisticLock(@Param("id") Long id);
 }
