@@ -2,10 +2,9 @@ package com.ssafy.home.domain.member.controller;
 
 import com.ssafy.home.domain.member.dto.request.FindPasswordRequest;
 import com.ssafy.home.domain.member.dto.request.LoginRequest;
-import com.ssafy.home.domain.member.dto.request.UpdatePasswordRequest;
 import com.ssafy.home.domain.member.dto.request.RegisterRequest;
+import com.ssafy.home.domain.member.dto.request.UpdatePasswordRequest;
 import com.ssafy.home.domain.member.dto.response.TokenResponse;
-import com.ssafy.home.domain.member.repository.MemberRepository;
 import com.ssafy.home.domain.member.service.MemberService;
 import com.ssafy.home.global.auth.dto.MemberDto;
 import com.ssafy.home.global.auth.jwt.JwtTokenProvider;
@@ -33,7 +32,6 @@ public class MemberController {
 
     private final MemberService memberService;
     private final RefreshTokenValidator refreshTokenValidator;
-    private final MemberRepository memberRepository;
 
     @Tag(name = "authentication")
     @Operation(summary = "일반 회원가입 API", description = "일반 회원가입 API")
@@ -86,7 +84,7 @@ public class MemberController {
 
         response.addHeader(JwtTokenProvider.AUTHORIZATION_HEADER, memberService.reissue(refreshToken));
 
-        return ResponseEntity.status(HttpStatus.OK).body("access token");
+        return ResponseEntity.status(HttpStatus.OK).body("access token success");
     }
 
     @Tag(name = "authentication")
@@ -129,7 +127,7 @@ public class MemberController {
     @Tag(name = "authentication")
     @Operation(summary = "유저 정보 가져오기 API", description = "유저 정보 가져오기 API")
     @PostMapping("/info")
-    public ResponseEntity<MemberDto> findPassword(@AuthenticationPrincipal MemberDto memberDto){
+    public ResponseEntity<MemberDto> getMemberInfo(@AuthenticationPrincipal MemberDto memberDto){
 
         return ResponseEntity.status(HttpStatus.OK).body(memberDto);
     }
