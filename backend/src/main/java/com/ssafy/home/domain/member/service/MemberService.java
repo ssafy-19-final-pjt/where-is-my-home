@@ -1,7 +1,5 @@
 package com.ssafy.home.domain.member.service;
 
-import com.ssafy.home.domain.member.dto.request.LoginRequest;
-import com.ssafy.home.domain.member.dto.request.RegisterRequest;
 import com.ssafy.home.domain.member.dto.response.TokenResponse;
 import com.ssafy.home.domain.member.repository.GeneralMemberRepository;
 import com.ssafy.home.domain.member.repository.LoginAttemptRepository;
@@ -12,11 +10,19 @@ import com.ssafy.home.entity.member.LoginAttempt;
 import com.ssafy.home.entity.member.Member;
 import com.ssafy.home.entity.member.MemberSecret;
 import com.ssafy.home.global.auth.Encryption;
+import com.ssafy.home.global.auth.constant.EmailConstraints;
 import com.ssafy.home.global.auth.jwt.JwtTokenProvider;
+import com.ssafy.home.global.auth.util.SendEmailLogic;
 import com.ssafy.home.global.error.ErrorCode;
 import com.ssafy.home.global.error.exception.AuthenticationException;
+import com.ssafy.home.global.error.exception.BusinessException;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,37 +36,44 @@ public class MemberService {
     private final GeneralMemberRepository generalMemberRepository;
     private final LoginAttemptRepository loginAttemptRepository;
 
+    private final JavaMailSender javaMailSender;
     private final JwtTokenProvider jwtTokenProvider;
     private final Encryption encryption;
+    private final SendEmailLogic sendEmailLogic;
 
     @Transactional
-    public void register(RegisterRequest registerRequest) {
+    public void register(String email, String password, String name) {
 
-        if (memberRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH);
+        if (memberRepository.existsByEmail(email)) {
+            throw new AuthenticationException(ErrorCode.ALREADY_REGISTERED_MEMBER);
         }
 
         String salt = encryption.getSalt();
-        String password = "";
 
         try {
-            password = encryption.Hashing(registerRequest.getPassword().getBytes(), salt);
+            password = encryption.Hashing(password.getBytes(), salt);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new BusinessException(ErrorCode.INVALID_AES_KEY);
         }
 
-        Member member = memberRepository.save(registerRequest.toEntity());
-        GeneralMember generalMember = generalMemberRepository.save(GeneralMember.builder().member(member).userEncPassword(password).build());
-        memberSecurityRepository.save(MemberSecret.builder().generalMember(generalMember).salt(salt).build());
-        loginAttemptRepository.save(LoginAttempt.builder().member(member).build());
-
+        Member member = memberRepository.save(Member.builder()
+                .name(name)
+                .email(email).build());
+        GeneralMember generalMember = generalMemberRepository.save(GeneralMember.builder()
+                .member(member)
+                .userEncPassword(password).build());
+        memberSecurityRepository.save(MemberSecret.builder()
+                .generalMember(generalMember)
+                .salt(salt).build());
+        loginAttemptRepository.save(LoginAttempt.builder()
+                .member(member).build());
     }
 
     @Transactional
-    public TokenResponse login(LoginRequest loginRequest) {
+    public TokenResponse login(String email, String password) {
 
-        Member member = memberRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new AuthenticationException(ErrorCode.ALREADY_REGISTERED_MEMBER));
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH));
 
         if (member.getLoginAttempt().getCount() >= 5) {
             throw new AuthenticationException(ErrorCode.MEMBER_COUNT_OUT);
@@ -70,9 +83,9 @@ public class MemberService {
 
             String salt = member.getGeneralMember().getMemberSecret().getSalt();
 
-            String enc_password = encryption.Hashing(loginRequest.getPassword().getBytes(), salt);
+            String encPassword = encryption.Hashing(password.getBytes(), salt);
 
-            if (!member.getGeneralMember().getUserEncPassword().equals(enc_password)) {
+            if (!member.getGeneralMember().getUserEncPassword().equals(encPassword)) {
                 throw new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH);
             }
 
@@ -90,7 +103,7 @@ public class MemberService {
 
         } catch (AuthenticationException e){
             member.getLoginAttempt().updateCount();
-            throw new AuthenticationException(e.getErrorCode());
+            throw new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH);
         } catch (Exception e) {
             member.getLoginAttempt().updateCount();
             e.printStackTrace();
@@ -112,5 +125,67 @@ public class MemberService {
         }
 
         return null;
+    }
+
+    public Member getMemberById(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(() -> new AuthenticationException(ErrorCode.MEMBER_NOT_EXISTS));
+    }
+
+    @Transactional
+    public void removeRefreshToken(Long id) {
+        Member member = memberRepository.findById(id).orElseThrow(() -> new AuthenticationException(ErrorCode.MEMBER_NOT_EXISTS));
+        member.updateRefreshToken("");
+    }
+
+    @Transactional
+    public void updatePassword(Long id, String password) {
+        Member member = memberRepository.findById(id).orElseThrow(() -> new AuthenticationException(ErrorCode.MEMBER_NOT_EXISTS));
+
+        String salt = member.getGeneralMember().getMemberSecret().getSalt();
+
+        String encPassword = null;
+        try {
+            encPassword = encryption.Hashing(password.getBytes(), salt);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.INVALID_AES_KEY);
+        }
+
+        member.getGeneralMember().updatePassword(encPassword);
+    }
+
+    @Transactional
+    @Async("mailExecutor")
+    public void sendPassword(String email) {
+
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH));
+
+        String newPassword = sendEmailLogic.makeRandomPassword();
+
+        try {
+            String encPassword = encryption.Hashing(newPassword.getBytes(),member.getGeneralMember().getMemberSecret().getSalt());
+            member.getGeneralMember().updatePassword(encPassword);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.INVALID_AES_KEY);
+        }
+
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+            mimeMessageHelper.setTo(email); // 메일 수신자
+            mimeMessageHelper.setSubject(EmailConstraints.MAIL_TITLE); // 메일 제목
+            mimeMessageHelper.setText(sendEmailLogic.setContext(newPassword, "password"), true); // 메일 본문 내용, HTML 여부
+            javaMailSender.send(mimeMessage);
+
+        } catch (MessagingException e) {
+            throw new BusinessException(ErrorCode.EMAIL_FAIL);
+        }
+    }
+
+    @Transactional
+    public void initAttempt(){
+        loginAttemptRepository.findAll().stream()
+                .filter(loginAttempt -> loginAttempt.getCount() >= 5)
+                .forEach(LoginAttempt::initCount);
     }
 }

@@ -1,0 +1,27 @@
+spring:
+  config:
+    import:
+      - privacy.yml
+  sql:
+    init:
+      mode: always
+
+  datasource:
+    url: jdbc:mysql://${db.host}:${db.port}/ssafyhometest?serverTimeZone=Asia/Seoul&characterEncoding=UTF-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${db.username}
+    password: ${db.password}
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    #    database-platform: org.hibernate.dialect.H2Dialect
+    #데이터베이스 초기화를 지연시키는 옵션. true 로 설정을하면 애플리케이션이 실행될 때 db를 초기화하지 않고 첫 데이터베이스 액세스 시 초기화를 수행(data.sql문 실행)한다.
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        show_sql: false
+        #        format_sql: false
+        use_sql_comments: false

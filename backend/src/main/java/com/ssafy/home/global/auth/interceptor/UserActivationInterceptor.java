@@ -1,7 +1,7 @@
 package com.ssafy.home.global.auth.interceptor;
 
 import com.ssafy.home.domain.member.service.MemberService;
-import com.ssafy.home.entity.member.Member;
+import com.ssafy.home.global.auth.dto.MemberDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +21,8 @@ public class UserActivationInterceptor implements HandlerInterceptor {
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             return false;
         }
-        System.out.println(SecurityContextHolder.getContext().getAuthentication());
 
-        Long memberId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Member member = memberService.getMemberById(memberId);
+        MemberDto memberDto = (MemberDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         return true;
     }

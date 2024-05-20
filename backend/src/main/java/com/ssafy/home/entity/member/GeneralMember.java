@@ -12,7 +12,7 @@ public class GeneralMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @Column(name = "user_enc_password", nullable = false, length = 256)
     private String userEncPassword;
@@ -29,5 +29,9 @@ public class GeneralMember {
         this.userEncPassword = userEncPassword;
         this.member = member;
         this.memberSecret = memberSecret;
+    }
+
+    public void updatePassword(String encPassword) {
+        this.userEncPassword = encPassword;
     }
 }

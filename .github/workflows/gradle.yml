@@ -21,6 +21,15 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    - name: Copy properties
+      env:
+        PRIVACY_YML: ${{ secrets.PRIVACY_YML }}
+        PRIVACY_YML_DIR: ./src/main/resources
+        PRIVACY_YML_FILE_NAME: privacy.yml
+      run: |
+        mkdir -p $PRIVACY_YML_DIR  # Ensure the directory exists
+        echo "$PRIVACY_YML" | base64 --decode > $PRIVACY_YML_DIR/$PRIVACY_YML_FILE_NAME
+
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
 

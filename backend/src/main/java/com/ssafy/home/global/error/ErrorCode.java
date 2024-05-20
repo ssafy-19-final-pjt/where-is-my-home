@@ -25,6 +25,23 @@ public enum ErrorCode {
     MEMBER_COUNT_OUT(HttpStatus.BAD_REQUEST, "M-004", "해당 회원 로그인 시도 횟수가 초과되었습니다. (비밀번호 변경이 필요합니다.)"),
     MEMBER_NOT_MATCH(HttpStatus.BAD_REQUEST, "M-005", " 아이디(로그인 전용 아이디) 또는 비밀번호를 잘못 입력했습니다.\n" +
             "입력하신 내용을 다시 확인해주세요."),
+
+
+    // 암호화
+    INVALID_AES_KEY(HttpStatus.BAD_REQUEST, "C-001", "암호화 에러"),
+
+    // 이메일
+    EMAIL_FAIL(HttpStatus.BAD_REQUEST, "E-001", "이메일 전송 에러"),
+
+    // 게시판
+    BOARD_NOT_FOUND(HttpStatus.BAD_REQUEST, "B-001", "찾고자 하는 게시글이 존재하지 않습니다."),
+    CANNOT_DELETE_BOARD_YOU_NOT_CREATE(HttpStatus.BAD_REQUEST, "B-002", "자신이 작성하지 않은 게시글을 삭제할 수 없습니다."),
+
+    // 게시판 댓글
+    COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "CO-001", "찾고자 하는 댓글이 존재하지 않습니다."),
+    CANNOT_UPDATE_COMMENT_YOU_NOT_CREATE(HttpStatus.BAD_REQUEST, "CO-002", "자신이 작성하지 않은 댓글은 수정할 수 없습니다."),
+    CANNOT_DELETE_COMMENT_YOU_NOT_CREATE(HttpStatus.BAD_REQUEST, "CO-003", "자신이 작성하지 않은 댓글은 삭제할 수 없습니다."),
+    BOARD_MISMATCH_FROM_BOARD(HttpStatus.BAD_REQUEST, "CO-004", "해당 게시글에 댓글이 존재하지 않습니다."),
     ;
 
     ErrorCode(HttpStatus httpStatus, String errorCode, String message) {
