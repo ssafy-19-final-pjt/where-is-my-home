@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class WishController {
     private final WishService wishService;
 
-    @GetMapping("/deal")
-    public ResponseEntity<List<WishHomedealResponseDto>> getWishDeal(@AuthenticationPrincipal MemberDto user){
-
-    }
+//    @GetMapping("/deal")
+//    public ResponseEntity<List<WishHomedealResponseDto>> getWishDeal(@AuthenticationPrincipal MemberDto user){
+//
+//    }
 }
