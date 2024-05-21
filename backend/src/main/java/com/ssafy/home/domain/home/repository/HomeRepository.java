@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface HomeRepository extends JpaRepository<Home, Long> {
-    List<Home> findTop100ByOrderByAptCodeAsc();
+    List<Home> findTop1000ByOrderByAptCodeAsc();
 }
