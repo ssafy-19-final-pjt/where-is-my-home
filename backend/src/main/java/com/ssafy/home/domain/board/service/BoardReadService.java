@@ -18,9 +18,13 @@ public class BoardReadService {
 
     private final static int PAGE_SIZE = 50;
 
-    public List<Board> getAllBoardList(int page){
-        Pageable pageable = PageRequest.of(page-1,PAGE_SIZE);
-        return boardRepository.findAll(pageable).getContent();
+    public List<Board> getAllBoardList(Long cursor){
+        if(cursor == null){
+            Pageable pageable = PageRequest.of(0,PAGE_SIZE);
+            return boardRepository.findAll(pageable).getContent();
+        } else {
+            return boardRepository.findNextPage(cursor, PAGE_SIZE);
+        }
     }
 
     public Board getBoard(Long boardId){

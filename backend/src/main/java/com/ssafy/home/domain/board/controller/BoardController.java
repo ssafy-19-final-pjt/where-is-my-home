@@ -25,8 +25,8 @@ public class BoardController {
 
     @Operation(summary="게시판 게시글 전체 조회", description = "게시판 게시글을 전체 조회합니다.")
     @GetMapping(path="", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<List<BoardResponseDto>> getBoardAll(@RequestParam(defaultValue = "10") int page) {
-        return ResponseEntity.ok(boardService.getBoardAll(page));
+    ResponseEntity<List<BoardResponseDto>> getBoardAll(@RequestParam(value="cursor", required = false) Long cursor) {
+        return ResponseEntity.ok(boardService.getBoardAll(cursor));
     }
 
     @Operation(summary="게시판 게시글 조회", description = "게시판 특정 게시글을 조회합니다.")

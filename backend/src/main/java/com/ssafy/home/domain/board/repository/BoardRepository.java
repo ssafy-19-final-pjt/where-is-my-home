@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,4 +18,14 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
         WHERE b.id = :id
     """)
     Optional<Board> findById(@Param("id")Long id);
+
+    @Query("""
+        SELECT b 
+        FROM Board b 
+        WHERE b.id < :cursor 
+        ORDER BY b.id 
+        DESC
+        LIMIT :limit
+    """)
+    List<Board> findNextPage(@Param("cursor") Long cursor, @Param("limit") int limit);
 }
