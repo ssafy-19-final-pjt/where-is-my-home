@@ -27,8 +27,8 @@ public class BoardService {
     private final BoardWriteService boardWriteService;
     private final CommentWriteService commentWriteService;
 
-    public List<BoardResponseDto> getBoardAll() {
-        return boardResponseMapper.toListBoardResponse(boardReadService.getAllBoardList());
+    public List<BoardResponseDto> getBoardAll(int page) {
+        return boardResponseMapper.toListBoardResponse(boardReadService.getAllBoardList(page));
     }
 
     public BoardResponseDto getBoard(Long boardId) {

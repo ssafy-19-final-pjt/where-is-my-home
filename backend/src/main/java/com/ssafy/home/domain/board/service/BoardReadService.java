@@ -5,6 +5,8 @@ import com.ssafy.home.domain.board.repository.BoardRepository;
 import com.ssafy.home.global.error.ErrorCode;
 import com.ssafy.home.global.error.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,8 +16,11 @@ import java.util.List;
 public class BoardReadService {
     private final BoardRepository boardRepository;
 
-    public List<Board> getAllBoardList(){
-        return boardRepository.findAll();
+    private final static int PAGE_SIZE = 50;
+
+    public List<Board> getAllBoardList(int page){
+        Pageable pageable = PageRequest.of(page-1,PAGE_SIZE);
+        return boardRepository.findAll(pageable).getContent();
     }
 
     public Board getBoard(Long boardId){
