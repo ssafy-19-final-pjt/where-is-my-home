@@ -4,12 +4,11 @@ import com.ssafy.home.domain.board.entity.Board;
 import com.ssafy.home.domain.board.repository.BoardRepository;
 import com.ssafy.home.global.error.ErrorCode;
 import com.ssafy.home.global.error.exception.BadRequestException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,10 +24,21 @@ public class BoardReadService {
         } else {
             return boardRepository.findNextPage(cursor, PAGE_SIZE);
         }
+
+    public Board getBoard(Long boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new BadRequestException(ErrorCode.BOARD_NOT_FOUND, "게시글이 존재하지 않습니다 :" + boardId));
     }
 
-    public Board getBoard(Long boardId){
-        return boardRepository.findById(boardId)
-                .orElseThrow(()->new BadRequestException(ErrorCode.BOARD_NOT_FOUND, "게시글이 존재하지 않습니다 :" + boardId));
+    public Board getboardWithPessimisticLock(Long boardId) {
+        return boardRepository.findByIdPessimisticLock(boardId).orElseThrow();
+    }
+
+    public Board getBoardWithOptimisticLock(Long boardId) {
+        return boardRepository.findByIdOptimisticLock(boardId).orElseThrow();
+    }
+
+    public Board getBoardWithDistributedLock(Long boardId) {
+        return boardRepository.findByIdOptimisticLock(boardId).orElseThrow();
     }
 }

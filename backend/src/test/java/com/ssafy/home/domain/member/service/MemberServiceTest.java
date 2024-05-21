@@ -1,5 +1,6 @@
 package com.ssafy.home.domain.member.service;
 
+import com.ssafy.home.config.TestConfig;
 import com.ssafy.home.domain.member.dto.response.TokenResponse;
 import com.ssafy.home.domain.member.repository.MemberRepository;
 import com.ssafy.home.entity.member.Member;
@@ -11,28 +12,23 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Transactional
 @DisplayName("[회원가입, ...]")
-class MemberServiceTest {
+@Transactional
+class MemberServiceTest extends TestConfig {
+
+    private final MemberService memberService;
+    private final MemberRepository memberRepository;
+    private final Encryption encryption;
 
     @Autowired
-    private MemberService memberService;
-
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
-    private Encryption encryption;
+    public MemberServiceTest(MemberService memberService, MemberRepository memberRepository, Encryption encryption) {
+        this.memberService = memberService;
+        this.memberRepository = memberRepository;
+        this.encryption = encryption;
+    }
 
     @Nested
     class 회원_가입 {
