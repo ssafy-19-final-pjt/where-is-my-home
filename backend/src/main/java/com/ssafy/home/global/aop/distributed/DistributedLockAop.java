@@ -10,6 +10,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 @RequiredArgsConstructor
+@Order(Ordered.LOWEST_PRECEDENCE - 1)
 public class DistributedLockAop {
     private static final String REDISSON_LOCK_PREFIX = "LOCK:";
     private final RedissonClient redissonClient;
@@ -39,15 +42,15 @@ public class DistributedLockAop {
             if (!available) {
                 return false;
             }
-
+            log.info("락 획득");
             return aopForTransaction.proceed(joinPoint);
         } catch (InterruptedException e) {
             throw new InterruptedException();
         } finally {
             try {
                 rLock.unlock();
+                log.info("락 해제");
             } catch (IllegalMonitorStateException e) {
-                log.info("ㅎㅇ");
             }
         }
     }
