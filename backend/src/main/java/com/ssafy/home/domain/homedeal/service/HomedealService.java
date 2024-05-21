@@ -13,8 +13,8 @@ import java.util.List;
 public class HomedealService {
     private final HomedealRepository homedealRepository;
 
-    public List<HomedealResponseDto> getHomedealList(Long homeId) {
-        return homedealRepository.findAllByHomeId(homeId).stream()
+    public List<HomedealResponseDto> getHomedealList(Long aptCode) {
+        return homedealRepository.findAllByHomeId(aptCode).stream()
                 .map(HomedealResponseDto::from)
                 .toList();
     }

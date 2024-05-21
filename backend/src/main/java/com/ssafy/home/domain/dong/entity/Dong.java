@@ -14,12 +14,12 @@ public class Dong {
     @Column(name = "dongcode")
     private String dongCode;
 
-    @Column(name="sidoName", nullable=false, length=20)
+    @Column(name="sidoname", nullable=false, length=20)
     private String sidoName;
 
-    @Column(name="gugunName", nullable = true)
+    @Column(name="gugunname", nullable = true)
     private String gugunName;
 
-    @Column(name="dongName", nullable =true)
+    @Column(name="dongname", nullable =true)
     private String dongName;
 }

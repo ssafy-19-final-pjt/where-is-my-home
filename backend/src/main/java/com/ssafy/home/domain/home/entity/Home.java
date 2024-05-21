@@ -12,26 +12,26 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Home {
     @Id
-    @Column(name="aptCode")
+    @Column(name="aptcode")
     private Long aptCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="dongCode")
+    @JoinColumn(name="dongcode")
     private Dong dong;
 
-    @Column(name="buildYear")
+    @Column(name="buildyear")
     private Integer buildYear;
 
-    @Column(name="roadName")
+    @Column(name="roadname")
     private String roadName;
 
-    @Column(name="roadNameCode")
+    @Column(name="roadnamecode")
     private String roadNameCode;
 
-    @Column(name="eubmyundongCode")
+    @Column(name="eubmyundongcode")
     private String eubmyundongCode;
 
-    @Column(name="apartmentName")
+    @Column(name="apartmentname")
     private String apartmentName;
 
     @Column(name="jibun")

@@ -16,19 +16,19 @@ public class HomeDeal {
     private Long no;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="aptCode")
+    @JoinColumn(name="aptcode")
     private Home home;
 
-    @Column(name="dealAmount")
+    @Column(name="dealamount")
     private String dealAmount;
 
-    @Column(name="dealYear")
+    @Column(name="dealyear")
     private Integer dealYear;
 
-    @Column(name="dealMonth")
+    @Column(name="dealmonth")
     private Integer dealMonth;
 
-    @Column(name="dealDay")
+    @Column(name="dealday")
     private Integer dealDay;
 
     @Column(name="area")
@@ -37,6 +37,6 @@ public class HomeDeal {
     @Column(name="floor")
     private String floor;
 
-    @Column(name="cancelDealType")
+    @Column(name="canceldealtype")
     private String cancelDealType;
 }

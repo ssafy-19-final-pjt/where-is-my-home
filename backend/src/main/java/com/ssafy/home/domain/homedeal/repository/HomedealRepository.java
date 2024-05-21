@@ -15,7 +15,7 @@ public interface HomedealRepository extends JpaRepository<HomeDeal, Long> {
         SELECT hd
         from HomeDeal hd
         join fetch hd.home
-        where hd.home.aptCode =: aptCode
+        where hd.home.aptCode =:aptcode
         """)
-    List<HomeDeal> findAllByHomeId(@Param("aptCode") Long aptCode);
+    List<HomeDeal> findAllByHomeId(@Param("aptcode") Long aptcode);
 }

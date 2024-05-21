@@ -15,7 +15,7 @@ public class HomeService {
     private final HomeRepository homeRepository;
 
     public List<HomeResponseDto> getHomeList(HomeParam homeParam) {
-        return homeRepository.findAll().stream()
+        return homeRepository.findTop100ByOrderByAptCodeAsc().stream()
                 .filter(home ->
                         (homeParam.getLongitude() == null || Math.abs(Float.parseFloat(home.getLng()) - homeParam.getLongitude()) <= 0.01f)
                         && (homeParam.getLatitude() == null || Math.abs(Float.parseFloat(home.getLat()) - homeParam.getLatitude()) <= 0.01f)
@@ -26,7 +26,6 @@ public class HomeService {
     }
 
     public HomeResponseDto getHome(Long homeId) {
-        //TODO : 에러처리
         Home home = homeRepository.findById(homeId).orElseThrow(RuntimeException::new);
         return HomeResponseDto.from(home);
     }
