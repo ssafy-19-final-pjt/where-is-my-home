@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("[회원가입, ...]")
+@Transactional
 class MemberServiceTest extends TestConfig {
 
     private final MemberService memberService;
