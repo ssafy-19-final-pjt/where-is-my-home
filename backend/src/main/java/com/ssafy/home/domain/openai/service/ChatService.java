@@ -26,7 +26,7 @@ public class ChatService {
 
     public OpenAIResponseDto chat(OpenAIParam openAIParam) {
         StringBuilder sb = new StringBuilder();
-        sb.append(openAIParam.getCity()).append(" ").append(openAIParam.getDong()).append("의 ").append("인기 아파트를 알려줄래?");
+        sb.append(openAIParam.getCity()).append(" ").append(openAIParam.getDong()).append("의 ").append("근처 인기있는 편의시설을 주소, 특징들을 5가지 알려줄래?");
         ChatRequest request = new ChatRequest(model, sb.toString());
         ChatResponse response = restTemplate.postForObject(apiUrl, request, ChatResponse.class);
 
