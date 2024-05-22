@@ -13,10 +13,11 @@ import com.ssafy.home.global.aop.retry.Retry;
 import com.ssafy.home.global.auth.dto.MemberDto;
 import com.ssafy.home.global.error.ErrorCode;
 import com.ssafy.home.global.error.exception.BadRequestException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +65,7 @@ public class CommentService {
     public void createCommentWithDistributedLock(MemberDto memberDto, Long boardId,
                                                  CommentRequestDto commentRequestDto) {
         Member member = memberService.getMemberById(memberDto.getId());
-        Board board = boardReadService.getBoardWithDistributedLock(boardId);
+        Board board = boardReadService.getBoard(boardId);
 
         commentWriteService.create(member, board, commentRequestDto);
     }
