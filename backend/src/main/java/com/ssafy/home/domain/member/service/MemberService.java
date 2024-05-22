@@ -26,6 +26,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -103,7 +106,7 @@ public class MemberService {
 
         } catch (AuthenticationException e){
             member.getLoginAttempt().updateCount();
-            throw new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH);
+            e.printStackTrace();
         } catch (Exception e) {
             member.getLoginAttempt().updateCount();
             e.printStackTrace();
@@ -183,9 +186,13 @@ public class MemberService {
     }
 
     @Transactional
-    public void initAttempt(){
-        loginAttemptRepository.findAll().stream()
+    public void initAttempt() {
+        LocalDateTime thirtyMinutesAgo = LocalDateTime.now().minusMinutes(30);
+        List<LoginAttempt> staleAttempts = loginAttemptRepository.findAll().stream()
                 .filter(loginAttempt -> loginAttempt.getCount() >= 5)
-                .forEach(LoginAttempt::initCount);
+                .filter(loginAttempt -> loginAttempt.getLoginRecentAttemp().isBefore(thirtyMinutesAgo))
+                .toList();
+
+        staleAttempts.forEach(LoginAttempt::initCount);
     }
 }

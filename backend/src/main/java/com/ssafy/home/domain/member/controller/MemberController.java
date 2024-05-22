@@ -50,6 +50,10 @@ public class MemberController {
 
         TokenResponse tokenResponse = memberService.login(loginRequest.getEmail(), loginRequest.getPassword());
 
+        if(tokenResponse == null){
+            throw new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH);
+        }
+
         response.addHeader(JwtTokenProvider.AUTHORIZATION_HEADER, tokenResponse.getAccessToken());
 
         Cookie cookie = new Cookie("refreshToken", tokenResponse.getRefreshToken());

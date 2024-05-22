@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class ScheduledJobConfiguration {
     private final MemberService memberService;
 
-    @Scheduled(cron ="0 30 * * * *", zone = "Asia/Seoul")
+    @Scheduled(cron ="0 * * * * *", zone = "Asia/Seoul")
     public void scheduledEndForm() {
         memberService.initAttempt();
     }
