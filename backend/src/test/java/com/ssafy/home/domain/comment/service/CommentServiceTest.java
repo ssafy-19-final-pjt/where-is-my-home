@@ -1,7 +1,5 @@
 package com.ssafy.home.domain.comment.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.ssafy.home.config.TestConfig;
 import com.ssafy.home.domain.board.entity.Board;
 import com.ssafy.home.domain.board.repository.BoardRepository;
@@ -10,15 +8,18 @@ import com.ssafy.home.domain.member.service.MemberService;
 import com.ssafy.home.entity.member.Member;
 import com.ssafy.home.global.auth.dto.MemberDto;
 import groovy.util.logging.Slf4j;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 class CommentServiceTest extends TestConfig {
@@ -71,7 +72,7 @@ class CommentServiceTest extends TestConfig {
         }
 
         @Test
-        void 동시성_테스트() throws InterruptedException {
+        void 에러_기본_코드는_동시성_테스트시_성공하지_않는_트랜잭션이_발생한다() throws InterruptedException {
             int threadCount = 100;
 
             CommentRequestDto commentRequestDto = CommentRequestDto.builder().content("test").build();
@@ -102,11 +103,11 @@ class CommentServiceTest extends TestConfig {
 
             Board newBoard = boardRepository.findById(board.getId()).orElseThrow();
 
-            assertThat(newBoard.getHit()).isEqualTo(100);
+            assertThat(newBoard.getHit()).isNotEqualTo(100);
         }
 
         @Test
-        void 동시성_테스트_비관적_락_사용() throws InterruptedException {
+        void 성공_동시성_테스트_비관적_락_사용() throws InterruptedException {
             int threadCount = 100;
 
             CommentRequestDto commentRequestDto = CommentRequestDto.builder().content("test").build();
@@ -141,7 +142,7 @@ class CommentServiceTest extends TestConfig {
         }
 
         @Test
-        void 동시성_테스트_낙관적_락_사용() throws InterruptedException {
+        void 성공_동시성_테스트_낙관적_락_사용() throws InterruptedException {
             int threadCount = 100;
 
             CommentRequestDto commentRequestDto = CommentRequestDto.builder().content("test").build();
@@ -176,7 +177,7 @@ class CommentServiceTest extends TestConfig {
         }
 
         @Test
-        void 동시성_테스트_분산_락_사용() throws InterruptedException {
+        void 성공_동시성_테스트_분산_락_사용_redisson() throws InterruptedException {
             int threadCount = 100;
 
             CommentRequestDto commentRequestDto = CommentRequestDto.builder().content("test").build();
