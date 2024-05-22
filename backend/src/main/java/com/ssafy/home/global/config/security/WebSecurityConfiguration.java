@@ -25,12 +25,12 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberService memberService;
 
-    private final String[] REQUIRE_AUTH_PATH = {"/health/**", "member/logout", "member/info", "member/pw", "/board/**", "/comment/**"};
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatchers((auth) -> auth.requestMatchers(REQUIRE_AUTH_PATH));
+                .securityMatchers((auth) -> auth.requestMatchers(WebSecurityPath.REQUIRE_AUTH_PATH.getPaths()));
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement((session) -> session
@@ -60,6 +60,6 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new UserActivationInterceptor(memberService))
-                .addPathPatterns(REQUIRE_AUTH_PATH);
+                .addPathPatterns(WebSecurityPath.REQUIRE_AUTH_PATH.getPaths());
     }
 }

@@ -4,7 +4,7 @@ import com.ssafy.home.domain.member.service.MemberService;
 import com.ssafy.home.entity.member.Member;
 import com.ssafy.home.global.auth.dto.MemberDto;
 import com.ssafy.home.global.auth.jwt.JwtTokenProvider;
-import io.jsonwebtoken.ExpiredJwtException;
+import com.ssafy.home.global.error.ErrorCode;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,6 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
+import com.ssafy.home.global.error.exception.AuthenticationException;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -41,19 +42,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         
         if(authHeader == null || !authHeader.startsWith("Bearer ")) {
             refreshTokenCheck(request, response, token);
-            throw new ExpiredJwtException(null, null, "header에 없거나, 형식이 틀립니다.");
+            throw new AuthenticationException(ErrorCode.NOT_EXISTS_AUTHORIZATION);
         }
 
         try{
             token = authHeader.split(" ")[1].trim();
         } catch (Exception e) {
             refreshTokenCheck(request, response, token);
-            throw new ExpiredJwtException(null, null, "액세스 토큰을 분리하는데 실패");
+            throw new AuthenticationException(ErrorCode.NOT_VALID_TOKEN);
         }
 
         if(!jwtTokenProvider.validateToken(token)){
             refreshTokenCheck(request, response, token);
-            throw new ExpiredJwtException(null, null, "액세스 토큰 만료");
+            throw new AuthenticationException(ErrorCode.TOKEN_EXPIRED);
         }
 
         Long userId = jwtTokenProvider.getInfoId(token);

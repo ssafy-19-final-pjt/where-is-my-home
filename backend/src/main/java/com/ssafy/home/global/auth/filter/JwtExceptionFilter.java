@@ -3,7 +3,7 @@ package com.ssafy.home.global.auth.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.home.global.error.ErrorCode;
 import com.ssafy.home.global.error.ErrorResponse;
-import io.jsonwebtoken.ExpiredJwtException;
+import com.ssafy.home.global.error.exception.AuthenticationException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,7 +23,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (ExpiredJwtException e) {
+        } catch (AuthenticationException e) {
             setErrorResponse(response, ErrorCode.ACCESS_TOKEN_REFRESH);
         } catch (JwtException | IllegalArgumentException | NullPointerException | UnsupportedEncodingException e) {
             setErrorResponse(response, ErrorCode.NOT_VALID_TOKEN);
