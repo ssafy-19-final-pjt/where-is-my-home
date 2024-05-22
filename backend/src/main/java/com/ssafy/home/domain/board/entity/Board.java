@@ -18,7 +18,7 @@ import java.util.List;
 public class Board extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "no")
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "title", nullable = false)
@@ -37,7 +37,13 @@ public class Board extends BaseTimeEntity {
     @OneToMany(mappedBy = "board")
     List<Comment> commentList = new ArrayList<>();
 
-    public void increaseHit(){this.hit++;}
+    @Version
+    private Long version;
+
+    public void increaseHit() {
+        this.hit++;
+    }
+
     @Builder
     private Board(String title, String content, int hit, Member member) {
         this.title = title;
