@@ -5,11 +5,10 @@ import com.ssafy.home.domain.board.repository.BoardRepository;
 import com.ssafy.home.global.error.ErrorCode;
 import com.ssafy.home.global.error.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -19,12 +18,7 @@ public class BoardReadService {
     private final static int PAGE_SIZE = 50;
 
     public List<Board> getAllBoardList(Long cursor){
-        if(cursor == null){
-            Pageable pageable = PageRequest.of(0,PAGE_SIZE);
-            return boardRepository.findAll(pageable).getContent();
-        } else {
-            return boardRepository.findNextPage(cursor, PAGE_SIZE);
-        }
+        return boardRepository.findNextPage(Objects.requireNonNullElse(cursor, 0L), PAGE_SIZE);
     }
 
     public Board getBoard(Long boardId){
