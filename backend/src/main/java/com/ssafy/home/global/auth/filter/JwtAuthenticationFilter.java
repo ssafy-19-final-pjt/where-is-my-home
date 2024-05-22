@@ -41,14 +41,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         
         if(authHeader == null || !authHeader.startsWith("Bearer ")) {
             refreshTokenCheck(request, response, token);
-            throw new JwtException("header에 없거나, 형식이 틀립니다.");
+            throw new ExpiredJwtException(null, null, "header에 없거나, 형식이 틀립니다.");
         }
 
         try{
             token = authHeader.split(" ")[1].trim();
         } catch (Exception e) {
             refreshTokenCheck(request, response, token);
-            throw new JwtException("액세스 토큰을 분리하는데 실패");
+            throw new ExpiredJwtException(null, null, "액세스 토큰을 분리하는데 실패");
         }
 
         if(!jwtTokenProvider.validateToken(token)){
@@ -87,8 +87,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .orElse(null);
         }
 
-        token = memberService.reissue(refreshToken);
-
+        try {
+            token = memberService.reissue(refreshToken);
+        } catch (Exception e){
+            throw new JwtException("리프레시 토큰 검증 실패");
+        }
         response.addHeader(JwtTokenProvider.AUTHORIZATION_HEADER, token);
     }
 

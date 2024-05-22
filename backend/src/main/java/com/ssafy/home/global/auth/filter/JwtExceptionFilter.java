@@ -24,7 +24,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
-            setErrorResponse(response, ErrorCode.TOKEN_EXPIRED);
+            setErrorResponse(response, ErrorCode.ACCESS_TOKEN_REFRESH);
         } catch (JwtException | IllegalArgumentException | NullPointerException | UnsupportedEncodingException e) {
             setErrorResponse(response, ErrorCode.NOT_VALID_TOKEN);
         }

@@ -122,9 +122,9 @@ public class MemberService {
                     .orElseThrow(() -> new AuthenticationException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
             return jwtTokenProvider.createAccessToken(member);
+        } else {
+            throw new AuthenticationException(ErrorCode.NOT_VALID_TOKEN);
         }
-
-        return null;
     }
 
     public Member getMemberById(Long memberId) {
