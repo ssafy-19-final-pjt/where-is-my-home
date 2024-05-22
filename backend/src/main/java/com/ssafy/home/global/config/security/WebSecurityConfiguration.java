@@ -2,6 +2,7 @@ package com.ssafy.home.global.config.security;
 
 import com.ssafy.home.domain.member.service.MemberService;
 import com.ssafy.home.global.auth.filter.JwtAuthenticationFilter;
+import com.ssafy.home.global.auth.filter.JwtExceptionFilter;
 import com.ssafy.home.global.auth.interceptor.UserActivationInterceptor;
 import com.ssafy.home.global.auth.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,8 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, memberService), BasicAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, memberService), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class);
 
         return http.build();
     }
