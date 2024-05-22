@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -20,6 +21,16 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     """)
     Optional<Board> findById(@Param("id")Long id);
 
+    @Query("""
+        SELECT b 
+        FROM Board b 
+        WHERE b.id < :cursor 
+        ORDER BY b.id 
+        DESC
+        LIMIT :limit
+    """)
+    List<Board> findNextPage(@Param("cursor") Long cursor, @Param("limit") int limit);
+    
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select b from Board b where b.id = :id")
     Optional<Board> findByIdPessimisticLock(@Param("id") Long id);
