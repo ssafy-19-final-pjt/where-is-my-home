@@ -7,10 +7,10 @@ spring:
       mode: always
 
   datasource:
-    url: jdbc:mysql://${db.host}:${db.port}/ssafyhometest?serverTimeZone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://${test.db.host}:${test.db.port}/${test.db.database}?serverTimeZone=Asia/Seoul&characterEncoding=UTF-8
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${db.username}
-    password: ${db.password}
+    username: ${test.db.username}
+    password: ${test.db.password}
 
   jpa:
     hibernate:
@@ -25,3 +25,7 @@ spring:
         show_sql: false
         #        format_sql: false
         use_sql_comments: false
+redis:
+  host: ${test.redis.host}
+  port: ${test.redis.port}
+  password: ${test.redis.password}
