@@ -8,7 +8,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -27,7 +27,7 @@ public class LoginAttempt {
 
     @LastModifiedDate
     @Column(name = "login_recent_attemp", columnDefinition = "datetime default CURRENT_TIMESTAMP")
-    private LocalDate loginRecentAttemp;
+    private LocalDateTime loginRecentAttemp;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -39,7 +39,7 @@ public class LoginAttempt {
     }
 
     public void updateCount(){
-        this.count++;
+        this.count = this.count + 1;
     }
 
     public void initCount(){
