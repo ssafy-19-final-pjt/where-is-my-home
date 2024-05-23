@@ -33,6 +33,11 @@ spring:
           starttls:
             enable: true
 
+redis:
+  host: localhost
+  port: 6379
+  password: ${test.redis.password}
+
 logging:
   level:
     com.app: debug

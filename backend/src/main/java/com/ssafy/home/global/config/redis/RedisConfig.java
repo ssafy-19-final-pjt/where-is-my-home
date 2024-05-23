@@ -1,12 +1,10 @@
 package com.ssafy.home.global.config.redis;
 
-import org.redisson.Redisson;
-import org.redisson.api.RedissonClient;
-import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -19,21 +17,29 @@ public class RedisConfig {
     @Value("${redis.port}")
     private int redisPort;
 
+    @Value("${redis.password}")
+    private String redisPassword;
+
     private static final String REDISSION_HOST_PREFIX = "redis://";
 
-    @Bean
-    public RedissonClient redissonClient() {
-        RedissonClient redisson = null;
-        Config config = new Config();
-        //useMasterSlaveServers() useSentinelServers(), useClusterServers() 등등..
-        config.useSingleServer().setAddress(REDISSION_HOST_PREFIX + redisHost + ":" + redisPort);
-        redisson = Redisson.create(config);
-        return redisson;
-    }
+//    @Bean
+//    public RedissonClient redissonClient() {
+//        RedissonClient redisson = null;
+//        Config config = new Config();
+//        //useMasterSlaveServers() useSentinelServers(), useClusterServers() 등등..
+//        config.useSingleServer().setAddress(REDISSION_HOST_PREFIX + redisHost + ":" + redisPort)
+//                .setPassword(redisPassword);
+//        redisson = Redisson.create(config);
+//        return redisson;
+//    }
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory(){
-        return new LettuceConnectionFactory();
+        final RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+        redisStandaloneConfiguration.setHostName(redisHost);
+        redisStandaloneConfiguration.setPort(redisPort);
+        redisStandaloneConfiguration.setPassword(redisPassword);
+        return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 
     @Bean

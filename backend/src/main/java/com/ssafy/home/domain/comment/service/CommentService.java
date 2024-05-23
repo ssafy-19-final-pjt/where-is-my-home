@@ -8,16 +8,16 @@ import com.ssafy.home.domain.comment.dto.response.CommentResponseDto;
 import com.ssafy.home.domain.comment.entity.Comment;
 import com.ssafy.home.domain.member.service.MemberService;
 import com.ssafy.home.entity.member.Member;
-import com.ssafy.home.global.aop.distributed.DistributedLock;
 import com.ssafy.home.global.aop.retry.Retry;
 import com.ssafy.home.global.auth.dto.MemberDto;
 import com.ssafy.home.global.error.ErrorCode;
 import com.ssafy.home.global.error.exception.BadRequestException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -64,16 +64,16 @@ public class CommentService {
         board.increaseHit();
     }
 
-    @Transactional
-    @DistributedLock(key = "#boardId")
-    public void createCommentWithDistributedLock(MemberDto memberDto, Long boardId,
-                                                 CommentRequestDto commentRequestDto) {
-        Member member = memberService.getMemberById(memberDto.getId());
-        Board board = boardReadService.getBoard(boardId);
-
-        commentWriteService.create(member, board, commentRequestDto);
-        board.increaseHit();
-    }
+//    @Transactional
+//    @DistributedLock(key = "#boardId")
+//    public void createCommentWithDistributedLock(MemberDto memberDto, Long boardId,
+//                                                 CommentRequestDto commentRequestDto) {
+//        Member member = memberService.getMemberById(memberDto.getId());
+//        Board board = boardReadService.getBoard(boardId);
+//
+//        commentWriteService.create(member, board, commentRequestDto);
+//        board.increaseHit();
+//    }
 
     @Transactional
     public void updateComment(MemberDto memberDto, Long boardId, Long commentId,
