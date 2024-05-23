@@ -100,7 +100,7 @@ public class MemberService {
         String accessToken = jwtTokenProvider.createAccessToken(member);
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
 
-//        member.getLoginAttempt().initCount();
+        member.getLoginAttempt().initCount();
 
         member.updateRefreshToken(refreshToken);
 
