@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -41,7 +42,7 @@ public class Member {
 
     @LastModifiedDate
     @Column(name = "modify_date", columnDefinition = "datetime default CURRENT_TIMESTAMP")
-    private LocalDate modifyDate;
+    private LocalDateTime modifyDate;
 
     @Column(name = "is_deleted")
     @ColumnDefault("false")

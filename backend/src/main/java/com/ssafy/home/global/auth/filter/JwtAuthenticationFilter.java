@@ -4,6 +4,8 @@ import com.ssafy.home.domain.member.service.MemberService;
 import com.ssafy.home.entity.member.Member;
 import com.ssafy.home.global.auth.dto.MemberDto;
 import com.ssafy.home.global.auth.jwt.JwtTokenProvider;
+import com.ssafy.home.global.error.ErrorCode;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -15,6 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
+import com.ssafy.home.global.error.exception.AuthenticationException;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -34,43 +37,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
+
+        String token = "";
+        
         if(authHeader == null || !authHeader.startsWith("Bearer ")) {
-            log.error("header에 없거나, 형식이 틀립니다. - {}", authHeader);
-            filterChain.doFilter(request,response);
-            return;
+            refreshTokenCheck(request, response, token);
+            throw new AuthenticationException(ErrorCode.NOT_EXISTS_AUTHORIZATION);
         }
 
-        String token;
         try{
             token = authHeader.split(" ")[1].trim();
         } catch (Exception e) {
-            log.error("토큰을 분리하는데 실패했습니다. - {}", authHeader);
-            filterChain.doFilter(request,response);
-            return;
+            refreshTokenCheck(request, response, token);
+            throw new AuthenticationException(ErrorCode.NOT_VALID_TOKEN);
         }
-        log.info("token : {}", token);
 
         if(!jwtTokenProvider.validateToken(token)){
-
-            Cookie[] cookies = request.getCookies();
-
-            String refreshToken = null;
-
-            if (cookies != null) {
-                refreshToken =  Arrays.stream(cookies)
-                        .filter(cookie -> cookie.getName().equals("refreshToken"))
-                        .map(Cookie::getValue)
-                        .findFirst()
-                        .orElse(null);
-            }
-
-            token = memberService.reissue(refreshToken);
-
-            response.addHeader(JwtTokenProvider.AUTHORIZATION_HEADER, token);
+            refreshTokenCheck(request, response, token);
+            throw new AuthenticationException(ErrorCode.TOKEN_EXPIRED);
         }
 
         Long userId = jwtTokenProvider.getInfoId(token);
-        log.info("userId : {}", userId);
+
         Member member = memberService.getMemberById(userId);
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -85,6 +73,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request, response);
+    }
+
+    private void refreshTokenCheck(HttpServletRequest request, HttpServletResponse response, String token){
+        Cookie[] cookies = request.getCookies();
+
+        String refreshToken = null;
+
+        if (cookies != null) {
+            refreshToken =  Arrays.stream(cookies)
+                    .filter(cookie -> cookie.getName().equals("refreshToken"))
+                    .map(Cookie::getValue)
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        try {
+            token = memberService.reissue(refreshToken);
+        } catch (Exception e){
+            throw new JwtException("리프레시 토큰 검증 실패");
+        }
+        response.addHeader(JwtTokenProvider.AUTHORIZATION_HEADER, token);
     }
 
 }

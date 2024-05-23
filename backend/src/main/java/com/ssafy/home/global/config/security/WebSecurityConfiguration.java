@@ -2,6 +2,7 @@ package com.ssafy.home.global.config.security;
 
 import com.ssafy.home.domain.member.service.MemberService;
 import com.ssafy.home.global.auth.filter.JwtAuthenticationFilter;
+import com.ssafy.home.global.auth.filter.JwtExceptionFilter;
 import com.ssafy.home.global.auth.interceptor.UserActivationInterceptor;
 import com.ssafy.home.global.auth.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +25,12 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberService memberService;
 
-    private final String[] REQUIRE_AUTH_PATH = {"/health/**", "member/logout", "member/info", "member/pw", "/board/**", "/comment/**"};
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatchers((auth) -> auth.requestMatchers(REQUIRE_AUTH_PATH));
+                .securityMatchers((auth) -> auth.requestMatchers(WebSecurityPath.REQUIRE_AUTH_PATH.getPaths()));
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement((session) -> session
@@ -38,7 +39,8 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, memberService), BasicAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, memberService), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class);
 
         return http.build();
     }
@@ -58,6 +60,6 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new UserActivationInterceptor(memberService))
-                .addPathPatterns(REQUIRE_AUTH_PATH);
+                .addPathPatterns(WebSecurityPath.REQUIRE_AUTH_PATH.getPaths());
     }
 }
