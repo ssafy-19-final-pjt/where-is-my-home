@@ -13,14 +13,15 @@ import com.ssafy.home.global.aop.retry.Retry;
 import com.ssafy.home.global.auth.dto.MemberDto;
 import com.ssafy.home.global.error.ErrorCode;
 import com.ssafy.home.global.error.exception.BadRequestException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommentService {
     private final CommentReadService commentReadService;
     private final CommentWriteService commentWriteService;
@@ -30,7 +31,7 @@ public class CommentService {
 
     public List<CommentResponseDto> getCommentAll(Long boardId) {
         Board board = boardReadService.getBoard(boardId);
-        return commentResponseMapper.toListCommentResponse(board.getCommentList());
+        return commentResponseMapper.toListCommentResponse(commentReadService.getCommentFromBoardId(boardId));
     }
 
     @Transactional
@@ -39,6 +40,7 @@ public class CommentService {
         Board board = boardReadService.getBoard(boardId);
 
         commentWriteService.create(member, board, commentRequestDto);
+        board.increaseHit();
     }
 
     @Transactional
@@ -48,6 +50,7 @@ public class CommentService {
         Board board = boardReadService.getboardWithPessimisticLock(boardId);
 
         commentWriteService.create(member, board, commentRequestDto);
+        board.increaseHit();
     }
 
     @Transactional
@@ -58,6 +61,7 @@ public class CommentService {
         Board board = boardReadService.getBoardWithOptimisticLock(boardId);
 
         commentWriteService.create(member, board, commentRequestDto);
+        board.increaseHit();
     }
 
     @Transactional
@@ -68,6 +72,7 @@ public class CommentService {
         Board board = boardReadService.getBoard(boardId);
 
         commentWriteService.create(member, board, commentRequestDto);
+        board.increaseHit();
     }
 
     @Transactional
