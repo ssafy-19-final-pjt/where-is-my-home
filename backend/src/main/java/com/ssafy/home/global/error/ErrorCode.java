@@ -19,6 +19,7 @@ public enum ErrorCode {
     FORBIDDEN_ADMIN(HttpStatus.FORBIDDEN, "A-008", "관리자 Role이 아닙니다."),
     ACCESS_TOKEN_REFRESH(HttpStatus.UNAUTHORIZED, "A-009", "액세스 토큰 재발급 하였습니다."),
 
+
     // 회원
     INVALID_MEMBER_TYPE(HttpStatus.BAD_REQUEST, "M-001", "잘못된 회원 타입 입니다.(memberType : KAKAO)"),
     ALREADY_REGISTERED_MEMBER(HttpStatus.BAD_REQUEST, "M-002", "이미 가입된 회원 입니다."),
@@ -29,7 +30,7 @@ public enum ErrorCode {
 
 
     // 암호화
-    INVALID_AES_KEY(HttpStatus.BAD_REQUEST, "C-001", "암호화 에러"),
+    FAIL_HASH_ENC(HttpStatus.BAD_REQUEST, "C-001", "암호화 에러"),
 
     // 이메일
     EMAIL_FAIL(HttpStatus.BAD_REQUEST, "E-001", "이메일 전송 에러"),
