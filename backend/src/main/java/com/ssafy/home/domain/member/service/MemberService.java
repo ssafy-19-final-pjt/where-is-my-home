@@ -43,6 +43,7 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final Encryption encryption;
     private final SendEmailLogic sendEmailLogic;
+    private final UpdateCount updateCount;
 
     @Transactional
     public void register(String email, String password, String name) {
@@ -56,7 +57,7 @@ public class MemberService {
         try {
             password = encryption.Hashing(password.getBytes(), salt);
         } catch (Exception e) {
-            throw new BusinessException(ErrorCode.INVALID_AES_KEY);
+            throw new BusinessException(ErrorCode.FAIL_HASH_ENC);
         }
 
         Member member = memberRepository.save(Member.builder()
@@ -82,37 +83,31 @@ public class MemberService {
             throw new AuthenticationException(ErrorCode.MEMBER_COUNT_OUT);
         }
 
+        String salt = member.getGeneralMember().getMemberSecret().getSalt();
+
+        String encPassword = null;
         try {
-
-            String salt = member.getGeneralMember().getMemberSecret().getSalt();
-
-            String encPassword = encryption.Hashing(password.getBytes(), salt);
-
-            if (!member.getGeneralMember().getUserEncPassword().equals(encPassword)) {
-                throw new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH);
-            }
-
-            String accessToken = jwtTokenProvider.createAccessToken(member);
-            String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
-
-            member.getLoginAttempt().initCount();
-
-            member.updateRefreshToken(refreshToken);
-
-            return TokenResponse.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .build();
-
-        } catch (AuthenticationException e){
-            member.getLoginAttempt().updateCount();
-            e.printStackTrace();
+            encPassword = encryption.Hashing(password.getBytes(), salt);
         } catch (Exception e) {
-            member.getLoginAttempt().updateCount();
-            e.printStackTrace();
+            throw new AuthenticationException(ErrorCode.FAIL_HASH_ENC);
         }
 
-        return null;
+        if (!member.getGeneralMember().getUserEncPassword().equals(encPassword)) {
+            updateCount.updateCount(member);
+            throw new AuthenticationException(ErrorCode.MEMBER_NOT_MATCH);
+        }
+
+        String accessToken = jwtTokenProvider.createAccessToken(member);
+        String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
+
+        member.getLoginAttempt().initCount();
+
+        member.updateRefreshToken(refreshToken);
+
+        return TokenResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
 
     }
 
@@ -150,7 +145,7 @@ public class MemberService {
         try {
             encPassword = encryption.Hashing(password.getBytes(), salt);
         } catch (Exception e) {
-            throw new BusinessException(ErrorCode.INVALID_AES_KEY);
+            throw new BusinessException(ErrorCode.FAIL_HASH_ENC);
         }
 
         member.getGeneralMember().updatePassword(encPassword);
@@ -165,10 +160,10 @@ public class MemberService {
         String newPassword = sendEmailLogic.makeRandomPassword();
 
         try {
-            String encPassword = encryption.Hashing(newPassword.getBytes(),member.getGeneralMember().getMemberSecret().getSalt());
+            String encPassword = encryption.Hashing(newPassword.getBytes(), member.getGeneralMember().getMemberSecret().getSalt());
             member.getGeneralMember().updatePassword(encPassword);
         } catch (Exception e) {
-            throw new BusinessException(ErrorCode.INVALID_AES_KEY);
+            throw new BusinessException(ErrorCode.FAIL_HASH_ENC);
         }
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
