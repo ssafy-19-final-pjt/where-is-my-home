@@ -16,14 +16,13 @@ public class CommentWriteService {
     public void create(Member member, Board board, CommentRequestDto commentRequestDto) {
         Comment comment = commentRequestDto.toEntity(member, board);
         commentRepository.save(comment);
-        board.increaseHit();
     }
 
     public void delete(Comment comment) {
         commentRepository.delete(comment);
     }
 
-    public void deleteByBoardId(Long boardId){
+    public void deleteByBoardId(Long boardId) {
         commentRepository.deleteAllByBoardId(boardId);
     }
 }
